@@ -1,23 +1,23 @@
 <!DOCTYPE html><html><head> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <style>body, html{padding:0 !important; margin: 0 !important; margin-bottom: 0px; padding-bottom: 0px;}body{overflow: hidden;}*{padding: 0; margin: 0;}</style></head><body><canvas id="myCanvas" style="object-fit: contain; position: relative;"></canvas>
   <script>
-  var color1 = "#009ccc";
-  var color2 = "#a42c9e";
-  var color3 = "#f765a3";
-  var color4 = "#371c66";
-  var color5 = "#FFFFFF";
-  var color6 = "#222222";
+  var color1 = "#092894";
+  var color2 = "#0A88EB";
+  var color3 = "#ae46ca";
+  var color4 = "#660c7f";
+  var color5 = "#c1c1c1";
+  var color6 = "#000000";
   var color7 = "#444444";
   var colorC = "7";
   var ft = "900 1100px Courier New";
-  var text = "GM";
+  var text = "GN";
   var year = "2024";
-  var gradient = "Radial";
-  var angle = "None";
+  var gradient = "Linear";
+  var angle = "Vertical";
   var animated = "No";
   var lineC = "1";
   var isAndroid = /Android/i.test(navigator.userAgent);
   var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-  var lspace = 5;
+  var lspace = -10;
   var cw = 35;
   var cheight = 40;
   if (isAndroid) {
@@ -29,5 +29,5 @@
     cw = 40;
   }
 
-    function releaseCanvas(canvas){canvas.width=1;canvas.style.width="1vw";canvas.height=1;canvas.style.height="1vh";const ctx=canvas.getContext("2d");ctx&&ctx.clearRect(0,0,1,1);canvas.remove()}var canvas=document.getElementById("myCanvas");var ctx=canvas.getContext("2d");canvas.width=4096;canvas.height=4096;canvas.style.width="100vw";canvas.style.height="100vh";canvas.getContext("2d").scale(2,2);const sunSize=1792;const centerX=canvas.width/4;const centerY=canvas.height/4;ctx.beginPath();ctx.arc(centerX,centerY,sunSize/2,0,2*Math.PI);ctx.closePath();ctx.fillStyle=ctx.createRadialGradient(centerX,centerY,0,centerX,centerY,sunSize/2);ctx.fillStyle.addColorStop(0,"red");ctx.fillStyle.addColorStop(1,"gold");ctx.shadowColor="#FFFF00";ctx.shadowBlur=300;ctx.fill();let yStart=centerY-sunSize/2;let yEnd=centerY+sunSize/2;var grdFill=ctx.createRadialGradient(centerX+8,centerY,0,centerX+8,centerY,sunSize/2);grdFill.addColorStop(Math.random(),color1);grdFill.addColorStop(Math.random(),color2);grdFill.addColorStop(Math.random(),color3);grdFill.addColorStop(Math.random(),color4);var grdBorder=ctx.createLinearGradient(centerX,yStart,centerX,yEnd);grdBorder.addColorStop(Math.random(),color5);grdBorder.addColorStop(Math.random(),color6);grdBorder.addColorStop(Math.random(),color7);ctx.font=ft;ctx.fillStyle=grdFill;ctx.strokeStyle=grdBorder;ctx.lineWidth=40;ctx.textAlign="center";ctx.textBaseline="middle";ctx.letterSpacing=lspace+"px";x=canvas.width/4-cw;var y1=canvas.height/4+cheight;ctx.shadowColor="rgba(0, 0, 0, 0.4)";ctx.shadowOffsetX=20;ctx.shadowOffsetY=20;ctx.shadowBlur=5;ctx.strokeText(text,x,y1);ctx.fillText(text,x,y1);let timer;document.getElementById("myCanvas").addEventListener("click",event=>{if(event.detail===1){timer=setTimeout(()=>{var canvases=document.getElementsByTagName("myCanvas");var canvasesList=Array.prototype.slice.call(canvases);canvasesList.forEach(releaseCanvas);location.reload()},200)}});document.getElementById("myCanvas").addEventListener("dblclick",event=>{event.preventDefault();clearTimeout(timer);var dataURL=canvas.toDataURL("image/png");var link=document.createElement("a");link.href=dataURL;link.download="gm.png";link.click()});window.addEventListener("pagehide",event=>{var canvases=document.getElementsByTagName("canvas");var canvasesList=Array.prototype.slice.call(canvases);canvasesList.forEach(releaseCanvas)});
+    function releaseCanvas(canvas){canvas.width=1;canvas.style.width="1vw";canvas.height=1;canvas.style.height="1vh";const ctx=canvas.getContext("2d");ctx&&ctx.clearRect(0,0,1,1);canvas.remove()}var canvas=document.getElementById("myCanvas");var ctx=canvas.getContext("2d");canvas.width=4096;canvas.height=4096;canvas.style.width="100vw";canvas.style.height="100vh";canvas.getContext("2d").scale(2,2);const sunSize=1792;const centerX=canvas.width/4;const centerY=canvas.height/4;ctx.beginPath();ctx.arc(centerX,centerY,sunSize/2,0,2*Math.PI);ctx.closePath();ctx.fillStyle=ctx.createRadialGradient(centerX,centerY,0,centerX,centerY,sunSize/2);ctx.fillStyle.addColorStop(0,"#111111");ctx.fillStyle.addColorStop(1,"#ffffff");ctx.shadowColor="#dededc";ctx.shadowBlur=300;ctx.fill();let xStart=centerX-sunSize/2;let xEnd=centerX+sunSize/2;let yStart=centerY-sunSize/2;let yEnd=centerY+sunSize/2;var grdFill=ctx.createLinearGradient(xStart,centerY,xEnd,centerY);grdFill.addColorStop(Math.random(),color1);grdFill.addColorStop(Math.random(),color2);grdFill.addColorStop(Math.random(),color3);grdFill.addColorStop(Math.random(),color4);var grdBorder=ctx.createLinearGradient(xStart,centerY,xEnd,centerY);grdBorder.addColorStop(Math.random(),color5);grdBorder.addColorStop(Math.random(),color6);grdBorder.addColorStop(Math.random(),color7);ctx.font=ft;ctx.fillStyle=grdFill;ctx.strokeStyle=grdBorder;ctx.lineWidth=40;ctx.textAlign="center";ctx.textBaseline="middle";ctx.letterSpacing=lspace+"px";var x=canvas.width/4-cw;var y1=canvas.height/4+cheight;ctx.shadowColor="rgba(0, 0, 0, 0.4)";ctx.shadowOffsetX=20;ctx.shadowOffsetY=20;ctx.shadowBlur=5;ctx.strokeText(text,x,y1);ctx.fillText(text,x,y1);let timer;document.getElementById("myCanvas").addEventListener("click",event=>{if(event.detail===1){timer=setTimeout(()=>{var canvases=document.getElementsByTagName("myCanvas");var canvasesList=Array.prototype.slice.call(canvases);canvasesList.forEach(releaseCanvas);location.reload()},200)}});document.getElementById("myCanvas").addEventListener("dblclick",event=>{event.preventDefault();clearTimeout(timer);var dataURL=canvas.toDataURL("image/png");var link=document.createElement("a");link.href=dataURL;link.download="gn.png";link.click()});window.addEventListener("pagehide",event=>{var canvases=document.getElementsByTagName("canvas");var canvasesList=Array.prototype.slice.call(canvases);canvasesList.forEach(releaseCanvas)});
   </script></body></html>
