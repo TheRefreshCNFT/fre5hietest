@@ -1,233 +1,34 @@
-  <!DOCTYPE HTML>
-    <html>
-    <head>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <style>
-      body, html {
-        padding:0 !important;
-        margin: 0 !important;
-        margin-bottom: 0px;
-        padding-bottom: 0px;
-      }
+<!DOCTYPE html><html><head> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <style>body, html{padding:0 !important; margin: 0 !important; margin-bottom: 0px; padding-bottom: 0px;}body{overflow: hidden;}*{padding: 0; margin: 0;}</style></head><body><canvas id="myCanvas" style="object-fit: contain; position: relative;"></canvas>
+  <script>
+  var color1 = "#009ccc";
+  var color2 = "#a42c9e";
+  var color3 = "#f765a3";
+  var color4 = "#371c66";
+  var color5 = "#FFFFFF";
+  var color6 = "#222222";
+  var color7 = "#444444";
+  var colorC = "7";
+  var ft = "900 1100px Courier New";
+  var text = "GM";
+  var year = "2024";
+  var gradient = "Radial";
+  var angle = "None";
+  var animated = "No";
+  var lineC = "1";
+  var isAndroid = /Android/i.test(navigator.userAgent);
+  var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  var lp = "80px";
+  var cw = 20;
+  var cheight = 40;
+  if (isAndroid) {
+    cheight = 50;
+    cw = 45;
+    lp = "5px";
+  } else if (isIOS) {
+    cheight = 30;
+    cw = 40;
+    lp = "50px";
+  }
 
-      * {
-        padding: 0;
-        margin: 0;
-      }
-        body  { background-color: black; overflow: hidden;}
-      .img{
-        position: absolute;
-        object-fit: contain;
-        display: none;
-
-
-      }
-
-        </style>
-      </head>
-        <body>
-
-
-
-
-  <div style="text-align:center; position: relative;">
-
-
-	  <img id="myImg" class='img' alt="F5xTurtles">
-	  
-    <canvas id="myCanvas" style="object-fit: contain; z-index: 0; top: 0; left: 0; position: absolute;"></canvas>
-    <canvas id="myCanvas2" style="object-fit: contain; z-index: 2; top: 0; left: 0; position: absolute;"></canvas>
-
-
-  </div>
-
-    <script type="text/javascript">
-
-        function getRandomDec(min,max) {
-        return Math.random() * (max - min) + min;
-        }
-
-      	function getRandomInt(min, max) {
-        	return Math.floor(Math.random() * (max - min + 1) + min);
-        }
-		
-		function releaseCanvas(canvas) {
-				canvas.width = 1;
-				canvas.style.width = "1vw";
-				canvas.height = 1;
-				canvas.style.height = "1vh";
-				const ctx = canvas.getContext('2d');
-				ctx && ctx.clearRect(0, 0, 1, 1);
-			}
-
-              var fvert1 = getRandomInt(2150,3250);
-              var fhor1 = getRandomInt(1150,4000);
-              var fhor2 = getRandomInt(100,2950);
-              var dSize = getRandomInt(1500, 1500);
-              var shdX = getRandomInt(0, 0);
-              var shdY = getRandomInt(0, 0);
-              var d2 = 85.17195340862722;
-          		var d3 = 198.54635545331595;
-          		var dArray = [d2, d3]
-          		var dIndex = getRandomInt(0, 1);
-          		var design = dArray[dIndex];
-          		var increment = design;
-
-
-              var img = document.getElementById('myImg');
-              img.width = 4096;
-              img.height = 4096;
-			        img.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAO4AAACwBAMAAAD6RE+WAAAAJ1BMVEUAAAAYVjYvrGtHcEwFEgsAAAD+52EAAAAdNTdoABz/AESA9v////+gofATAAAABnRSTlPm5uYA/OGVP6/KAAABrUlEQVR42u3a223DMAyFYa/QFbpCV+gKWaEraAWv4BW6QlfIULWgEGEcXWjkIsr4z0ODBom+lwMyhj199cmEi4uL+1Z3WYN7VHdZQsA9qvuIiuvVlUnxmIrr1Q0hejl1XoM7upsalVNDwD2qu1fF9egui0yM9FcmxX4V16MbwrVR8TX+F+39Kq43N3bpd83txIjmrTplguvfjeeX3dMJd1w316l5lolxnRvR+MwkZ+P6cXOdSjsiebjjuqVO/a1JEyMlnv1dydbG9eGWOoU7vqs7JTtcd0rv+h9DtI3b39WdEld3quSGS3D9urpTH5foTskZMi/u3fO51i3cvq7ulLi6U233vle4PtxWp+Q9mSXxt7m2cX27rU61XMvux+3jWjulbbm+tti4fV1rp3DHda2d2rpiW66/cX24tU7hjuXG9/SZrX2g974lpetu3D5uax/gju+2dr2ct8fExcV9rivf1a+l5MzaPefafWdcXNzH3JxZfN6y4lqf+cLFxX2uq+9DWUw9Q2rfwcXFfa1r+txmPtSeycTFxfXjbve4Za/j4uL6cF8RXFxc3L35B//SkHCMJQNUAAAAAElFTkSuQmCC';
-
-
-
-        var ang1 = 0.46289330053579913;
-        var ang2 = 0.0008996859405740301;
-        var ang3 = 0.0030492461097504056;
-
-
-      canvas = document.getElementById('myCanvas');
-      canvas.width =4096;
-      canvas.height = 4096;
-      canvas.style.width = "100vw";
-      canvas.style.height = '100vh';
-      canvas.getContext('2d').scale(2,2);
-
-      var ctx = canvas.getContext("2d");
-      var grd = ctx.createLinearGradient(0, Math.floor(ang1 * 4096), Math.floor(ang2 * 4096), Math.floor(ang3 * 4096));
-
-      grd.addColorStop(Math.random(), "#06234a");
-      grd.addColorStop(Math.random(), "#0e3d71");
-      grd.addColorStop(Math.random(), "#0a5b9b");
-      grd.addColorStop(Math.random(), "#135a88");
-      grd.addColorStop(Math.random(), "#081b5e");
-
-
-      var ctx2 = canvas.getContext("2d");
-      var grd2 = ctx.createLinearGradient(0, Math.floor(ang1 * 4096), Math.floor(ang2 * 4096), Math.floor(ang3 * 4096));
-
-      grd2.addColorStop(Math.random(), "#302e2c");
-      grd2.addColorStop(Math.random(), "#46403e");
-      grd2.addColorStop(Math.random(), "#4e4737");
-      grd2.addColorStop(Math.random(), "#46403e");
-      grd2.addColorStop(Math.random(), "#302e2c");
-
-
-
-	  ctx.fillStyle = grd;
-	  ctx.fillRect(0, 0, 2048, 1300);
-    ctx2.fillStyle = grd2;
-    ctx2.fillRect(0,1300, 2048, 2048);
-
-	  var grd1 = ctx.createLinearGradient(0,Math.floor(ang1 * 4096),Math.floor(ang2 * 4096),Math.floor(ang3 * 4096));
-	  grd1.addColorStop(Math.random(), "#bee5f1");
-    grd1.addColorStop(Math.random(), "#f1f6f7");
-    grd1.addColorStop(Math.random(), "#dde4e8");
-	  grd1.addColorStop(Math.random(), "#f7f7f7");
-
-function spiral() {
-        var c=document.getElementById("myCanvas");
-        var ctx=c.getContext("2d");
-        var centerX = getRandomInt(50, 2000);
-        var centerY = getRandomInt(50, 925);
-        ctx.moveTo(centerX, centerY);
-
-
-        var gap = Math.floor(Math.random() * 1) + .006;
-
-        var theta = increment;
-        while( theta < Math.floor(Math.random() * 50.090909095) + dSize) {
-           var newX = centerX + theta * Math.cos(theta) * gap;
-           var newY = centerY + theta * Math.sin(theta) * gap;
-           ctx.lineTo(newX, newY);
-           theta = theta + increment;
-                }
-        ctx.shadowColor = "#4c6eb0";
-        ctx.shadowOffsetX = shdX;
-        ctx.shadowOffsetY = shdY;
-        ctx.shadowBlur = 30;
-        ctx.strokeStyle = grd1;
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-
-	    	var c2 = document.getElementById("myCanvas2");
-        var ctx2 = c2.getContext("2d");
-		    c2.width =4096;
-      	c2.height = 4096;
-      	c2.style.width = "100vw";
-      	c2.style.height = '100vh';
-
-
-		ctx2.drawImage(c, 0, 0);
-		document.getElementById("myCanvas").style.display = "none";
-
-
-
-		window.onload = function() {
-			const flipper = getRandomInt(0,1);
-			switch (flipper) {
-			  case 0:
-
-        var img = document.getElementById("myImg");
-			  ctx2.save();
-			  ctx2.scale(-1,1);
-
-        ctx2.drawImage(img, fhor1 * -1, fvert1, 1125, 800);
-       ctx2.restore();
-
-       break;
-       default:
-
-       var img = document.getElementById("myImg");
-
-       ctx2.drawImage(img, fhor2, fvert1, 1125, 800);
-      }
-    }
-
-        c2.addEventListener(
-          "click",
-          function (event) {
-
-            if (!event.target.matches(".myCanvas2")) {
-				var canvases = document.getElementsByTagName("canvas");
-				var canvasesList = Array.prototype.slice.call(canvases);
-            	canvasesList.forEach(releaseCanvas);
-              location.reload();
-            }
-
-          },
-          false
-        );
-      };
-      for (let i = 0; i < 30; i++) {
-  spiral();
-}
-
-var dSize = 60000;
-var d2 = 82.08821348482627;
-var d3 = 63.05723279263028;
-var d5 = 118.81117798221669;
-var d6 = 100.7779690913753;
-var d7 = 112.56027199005798;
-var d8 = 132.4238766421944;
-var d9 = 143.81848578996073;
-var d10 = 82.34972902795033;
-var dArray = [d2, d3, d5, d6, d7, d8, d9, d10]
-var dIndex = getRandomInt(0, 7);
-var design = dArray[dIndex];
-var increment = design;
-//ctx.strokeStyle = "grd";
-spiral();
-
-		
- /*Run release even when they refresh not with click (F5, refresh button, closing page)*/
-			window.addEventListener('pagehide', (event) => {
-				/*Release every canvas*/
-					var canvases = document.getElementsByTagName("canvas");
-					var canvasesList = Array.prototype.slice.call(canvases);
-            		canvasesList.forEach(releaseCanvas);
-			});
-      </script>
-        </body>
-            </html>
+    function releaseCanvas(canvas){canvas.width=1;canvas.style.width="1vw";canvas.height=1;canvas.style.height="1vh";const ctx=canvas.getContext("2d");ctx&&ctx.clearRect(0,0,1,1);canvas.remove()}var canvas=document.getElementById("myCanvas");var ctx=canvas.getContext("2d");canvas.width=4096;canvas.height=4096;canvas.style.width="100vw";canvas.style.height="100vh";canvas.getContext("2d").scale(2,2);const sunSize=1792;const centerX=canvas.width/4;const centerY=canvas.height/4;ctx.beginPath();ctx.arc(centerX,centerY,sunSize/2,0,2*Math.PI);ctx.closePath();ctx.fillStyle=ctx.createRadialGradient(centerX,centerY,0,centerX,centerY,sunSize/2);ctx.fillStyle.addColorStop(0,"red");ctx.fillStyle.addColorStop(1,"gold");ctx.shadowColor="#FFFF00";ctx.shadowBlur=300;ctx.fill();let yStart=centerY-sunSize/2;let yEnd=centerY+sunSize/2;var grdFill=ctx.createRadialGradient(centerX+8,centerY,0,centerX+8,centerY,sunSize/2);grdFill.addColorStop(Math.random(),color1);grdFill.addColorStop(Math.random(),color2);grdFill.addColorStop(Math.random(),color3);grdFill.addColorStop(Math.random(),color4);var grdBorder=ctx.createLinearGradient(centerX,yStart,centerX,yEnd);grdBorder.addColorStop(Math.random(),color5);grdBorder.addColorStop(Math.random(),color6);grdBorder.addColorStop(Math.random(),color7);ctx.font=ft;ctx.fillStyle=grdFill;ctx.strokeStyle=grdBorder;ctx.lineWidth=40;ctx.textAlign="center";ctx.textBaseline="middle";ctx.letterSpacing=lp;x=canvas.width/4-cw;var y1=canvas.height/4+cheight;ctx.shadowColor="rgba(0, 0, 0, 0.4)";ctx.shadowOffsetX=20;ctx.shadowOffsetY=20;ctx.shadowBlur=5;ctx.strokeText(text,x,y1);ctx.fillText(text,x,y1);let timer;document.getElementById("myCanvas").addEventListener("click",event=>{if(event.detail===1){timer=setTimeout(()=>{var canvases=document.getElementsByTagName("myCanvas");var canvasesList=Array.prototype.slice.call(canvases);canvasesList.forEach(releaseCanvas);location.reload()},200)}});document.getElementById("myCanvas").addEventListener("dblclick",event=>{event.preventDefault();clearTimeout(timer);var dataURL=canvas.toDataURL("image/png");var link=document.createElement("a");link.href=dataURL;link.download="gm.png";link.click()});window.addEventListener("pagehide",event=>{var canvases=document.getElementsByTagName("canvas");var canvasesList=Array.prototype.slice.call(canvases);canvasesList.forEach(releaseCanvas)});
+  </script></body></html>
