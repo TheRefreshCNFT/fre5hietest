@@ -1,33 +1,132 @@
-<!DOCTYPE html><html><head> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <style>body, html{padding:0 !important; margin: 0 !important; margin-bottom: 0px; padding-bottom: 0px;}body{overflow: hidden;}*{padding: 0; margin: 0;}</style></head><body><canvas id="myCanvas" style="object-fit: contain; position: relative;"></canvas>
+<!DOCTYPE html><html><head> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <style>body, html{padding:0 !important; margin: 0 !important; margin-bottom: 0px; padding-bottom: 0px;}body{overflow: hidden;background-color: #000000;}*{padding: 0; margin: 0;}#modal{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:20px;box-shadow:0 4px 8px rgba(0,0,0,0.2);z-index:1000;}#modal button{display:block;width:100%;margin-bottom:10px;}#modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:999;}</style></head><body><canvas id="myCanvas" style="object-fit: contain; position: relative;"></canvas>
+  <div id="modal">
+    <button id="minButton">MIN</button>
+    <button id="fullButton">FULL</button>
+  </div>
+  <div id="modal-overlay"></div>
   <script>
-  var color1 = "#f67c00";
-  var color2 = "#e8b772";
-  var color3 = "#ce9160";
-  var color4 = "#181818";
-  var color5 = "#FFFFFF";
-  var color6 = "#222222";
-  var color7 = "#444444";
-  var colorC = "7";
-  var ft = "900 1100px Courier New";
-  var text = "GM";
-  var year = "2024";
-  var gradient = "Radial";
-  var angle = "None";
-  var animated = "No";
-  var lineC = "1";
-  var isAndroid = /Android/i.test(navigator.userAgent);
-  var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-  var lspace = 5;
-  var cw = 35;
-  var cheight = 40;
-  if (isAndroid) {
-    cheight = 55;
-    cw = 65;
-    lspace = -30;
-  } else if (isIOS) {
-    cheight = 30;
-    cw = 40;
-  }
+    var color1 = "#FF0303";
+    var color2 = "#0320FF";
+    var color3 = "#FFBA03";
+    var color4 = "#FFFF00";
+    var color5 = "#FFFFFF";
+    var color6 = "#222222";
+    var color7 = "#444444";
+    var colorC = "7";
+    var ft = "900 1100px Courier New";
+    var text = "GM";
+    var year = "2024";
+    var gradient = "Linear";
+    var gAngle = "Horizontal";
+    var animated = "No";
+    var lineC = "1";
+    var isAndroid = /Android/i.test(navigator.userAgent);
+    var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    var lspace = 5;
+    var cw = 35;
+    var cheight = 40;
+    if (isAndroid) {
+      cheight = 55;
+      cw = 65;
+      lspace = -30;
+    } else if (isIOS) {
+      cheight = 30;
+      cw = 40;
+    }
 
-    function releaseCanvas(canvas){canvas.width=1;canvas.style.width="1vw";canvas.height=1;canvas.style.height="1vh";const ctx=canvas.getContext("2d");ctx&&ctx.clearRect(0,0,1,1);canvas.remove()}var canvas=document.getElementById("myCanvas");var ctx=canvas.getContext("2d");canvas.width=4096;canvas.height=4096;canvas.style.width="100vw";canvas.style.height="100vh";canvas.getContext("2d").scale(2,2);const sunSize=1792;const centerX=canvas.width/4;const centerY=canvas.height/4;ctx.beginPath();ctx.arc(centerX,centerY,sunSize/2,0,2*Math.PI);ctx.closePath();ctx.fillStyle=ctx.createRadialGradient(centerX,centerY,0,centerX,centerY,sunSize/2);ctx.fillStyle.addColorStop(0,"red");ctx.fillStyle.addColorStop(1,"gold");ctx.shadowColor="#FFFF00";ctx.shadowBlur=300;ctx.fill();let yStart=centerY-sunSize/2;let yEnd=centerY+sunSize/2;var grdFill=ctx.createRadialGradient(centerX+8,centerY,0,centerX+8,centerY,sunSize/2);grdFill.addColorStop(Math.random(),color1);grdFill.addColorStop(Math.random(),color2);grdFill.addColorStop(Math.random(),color3);grdFill.addColorStop(Math.random(),color4);var grdBorder=ctx.createLinearGradient(centerX,yStart,centerX,yEnd);grdBorder.addColorStop(Math.random(),color5);grdBorder.addColorStop(Math.random(),color6);grdBorder.addColorStop(Math.random(),color7);ctx.font=ft;ctx.fillStyle=grdFill;ctx.strokeStyle=grdBorder;ctx.lineWidth=40;ctx.textAlign="center";ctx.textBaseline="middle";ctx.letterSpacing=lspace+"px";x=canvas.width/4-cw;var y1=canvas.height/4+cheight;ctx.shadowColor="rgba(0, 0, 0, 0.4)";ctx.shadowOffsetX=20;ctx.shadowOffsetY=20;ctx.shadowBlur=5;ctx.strokeText(text,x,y1);ctx.fillText(text,x,y1);let timer;document.getElementById("myCanvas").addEventListener("click",event=>{if(event.detail===1){timer=setTimeout(()=>{var canvases=document.getElementsByTagName("myCanvas");var canvasesList=Array.prototype.slice.call(canvases);canvasesList.forEach(releaseCanvas);location.reload()},200)}});document.getElementById("myCanvas").addEventListener("dblclick",event=>{event.preventDefault();clearTimeout(timer);var dataURL=canvas.toDataURL("image/png");var link=document.createElement("a");link.href=dataURL;link.download="gm.png";link.click()});window.addEventListener("pagehide",event=>{var canvases=document.getElementsByTagName("canvas");var canvasesList=Array.prototype.slice.call(canvases);canvasesList.forEach(releaseCanvas)});
+    function releaseCanvas(canvas){canvas.width=1;canvas.style.width="1vw";canvas.height=1;canvas.style.height="1vh";const ctx=canvas.getContext("2d");ctx&&ctx.clearRect(0,0,1,1);canvas.remove()}
+    var canvas=document.getElementById("myCanvas");
+    var ctx=canvas.getContext("2d");
+    canvas.width=4096;
+    canvas.height=4096;
+    canvas.style.width="100vw";
+    canvas.style.height="100vh";
+    canvas.getContext("2d").scale(2,2);
+    const sunSize=1792;
+    const centerX=canvas.width/4;
+    const centerY=canvas.height/4;
+    ctx.beginPath();
+    ctx.arc(centerX,centerY,sunSize/2,0,2*Math.PI);
+    ctx.closePath();
+    ctx.fillStyle=ctx.createRadialGradient(centerX,centerY,0,centerX,centerY,sunSize/2);
+    ctx.fillStyle.addColorStop(0,"red");
+    ctx.fillStyle.addColorStop(1,"gold");
+    ctx.shadowColor="#FFFF00";
+    ctx.shadowBlur=300;
+    ctx.fill();
+    let yStart=centerY-sunSize/2;
+    let yEnd=centerY+sunSize/2;
+    var grdFill=ctx.createLinearGradient(centerX,yStart,centerX,yEnd);
+    grdFill.addColorStop(Math.random(),color1);
+    grdFill.addColorStop(Math.random(),color2);
+    grdFill.addColorStop(Math.random(),color3);
+    grdFill.addColorStop(Math.random(),color4);
+    var grdBorder=ctx.createLinearGradient(centerX,yStart,centerX,yEnd);
+    grdBorder.addColorStop(Math.random(),color5);
+    grdBorder.addColorStop(Math.random(),color6);
+    grdBorder.addColorStop(Math.random(),color7);
+    ctx.font=ft;
+    ctx.fillStyle=grdFill;
+    ctx.strokeStyle=grdBorder;
+    ctx.lineWidth=40;
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+    ctx.letterSpacing=lspace+"px";
+    x=canvas.width/4-cw;
+    var y1=canvas.height/4+cheight;
+    ctx.shadowColor="rgba(0, 0, 0, 0.4)";
+    ctx.shadowOffsetX=20;
+    ctx.shadowOffsetY=20;
+    ctx.shadowBlur=5;
+    ctx.strokeText(text,x,y1);
+    ctx.fillText(text,x,y1);
+    let timer;
+    document.getElementById("myCanvas").addEventListener("click",event=>{
+      if(event.detail===1){
+        timer=setTimeout(()=>{
+          var canvases=document.getElementsByTagName("myCanvas");
+          var canvasesList=Array.prototype.slice.call(canvases);
+          canvasesList.forEach(releaseCanvas);
+          location.reload()
+        },200)
+      }
+    });
+    document.getElementById("myCanvas").addEventListener("dblclick",event=>{
+      event.preventDefault();
+      clearTimeout(timer);
+      document.getElementById('modal').style.display = 'block';
+      document.getElementById('modal-overlay').style.display = 'block';
+    });
+    document.getElementById('modal-overlay').addEventListener('click', () => {
+      document.getElementById('modal').style.display = 'none';
+      document.getElementById('modal-overlay').style.display = 'none';
+    });
+    document.getElementById('minButton').addEventListener('click', () => {
+      var tempCanvas = document.createElement('canvas');
+      tempCanvas.width = 550;
+      tempCanvas.height = 550;
+      var tempCtx = tempCanvas.getContext('2d');
+      tempCtx.drawImage(canvas, 0, 0, 550, 550);
+      var dataURL = tempCanvas.toDataURL("image/jpeg", 0.8);
+      var link = document.createElement("a");
+      link.href = dataURL;
+      link.download = "gm.jpg";
+      link.click();
+      document.getElementById('modal').style.display = 'none';
+      document.getElementById('modal-overlay').style.display = 'none';
+    });
+    document.getElementById('fullButton').addEventListener('click', () => {
+      var dataURL = canvas.toDataURL("image/png");
+      var link = document.createElement("a");
+      link.href = dataURL;
+      link.download = "gm.png";
+      link.click();
+      document.getElementById('modal').style.display = 'none';
+      document.getElementById('modal-overlay').style.display = 'none';
+    });
+    window.addEventListener("pagehide",event=>{
+      var canvases=document.getElementsByTagName("canvas");
+      var canvasesList=Array.prototype.slice.call(canvases);
+      canvasesList.forEach(releaseCanvas)
+    });
   </script></body></html>
