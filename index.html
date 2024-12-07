@@ -234,7 +234,7 @@
                 pieces.forEach((piece) => {
                     piece.x += piece.dx;
                     piece.y += piece.dy;
-                    piece.opacity -= 0.05; // Gradually reduce opacity
+                    piece.opacity -= 0.075; // Gradually reduce opacity
 
                     if (piece.opacity > 0) {
                         ctx.globalAlpha = piece.opacity; // Apply opacity
