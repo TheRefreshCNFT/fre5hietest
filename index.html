@@ -6,7 +6,7 @@
     <style>
         * { margin: 0; padding: 0; }
         html, body { width: 100%; height: 100%; background-color: black; overflow: hidden; }
-        canvas { display: block; }
+        canvas { display: block; overflow: hidden;}
 
         #stats {
             position: absolute;
@@ -220,14 +220,14 @@
                 wid = [5, 10];
                 hei = [5, 10];
             } else if (isIOS) {
-                dxRange = [-3, 3];
-                dyRange = [-3, 3]; // Slower speeds for iOS
+                dxRange = [-4, 4];
+                dyRange = [-4, 4]; // Slower speeds for iOS
                 wid = [5, 10];
                 hei = [5, 10];
             } else {
                 dxRange = [-3, 3];
                 dyRange = [-3, 3];
-                wid = [5, 10];
+                wid = [50, 10];
                 hei = [5, 10];
             }
 
@@ -261,7 +261,7 @@
                   if (isAndroid) {
                       var po = 0.060;
                   } else if (isIOS) {
-                      var po = 0.060;
+                      var po = 0.065;
                   } else {
                       var po = 0.060;
                   }
