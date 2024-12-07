@@ -208,14 +208,37 @@
             const pieces = [];
             const pieceCount = Math.floor((rect.width * rect.height) / 3500);
 
+                    // Detect device type
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+            // Adjust speeds for devices
+            let dxRange, dyRange;
+            if (isAndroid) {
+                dxRange = [-3, 3];
+                dyRange = [-3, 3]; // Slower speeds for Android
+                wid = [5, 10];
+                hei = [5, 10];
+            } else if (isIOS) {
+                dxRange = [-3, 3];
+                dyRange = [-3, 3]; // Slower speeds for iOS
+                wid = [5, 10];
+                hei = [5, 10];
+            } else {
+                dxRange = [-5, 5];
+                dyRange = [-5, 5];
+                wid = [10, 20];
+                hei = [10, 20];
+            }
+
             for (let i = 0; i < pieceCount; i++) {
                 const piece = {
                     x: rect.x + rF(0, rect.width),
                     y: rect.y + rF(0, rect.height),
-                    dx: rF(-5, 5), // Random x movement in all directions
-                    dy: rF(-5, 5), // Random y movement in all directions
-                    width: rF(10, 20),
-                    height: rF(10, 20),
+                    dx: rF(...dxRange), // Random x movement in all directions
+                    dy: rF(...dyRange), // Random y movement in all directions
+                    width: rF(...wid),
+                    height: rF(...hei),
                     color: randomPaletteColor(),
                     opacity: 1.0, // Initial opacity (fully visible)
                 };
@@ -232,9 +255,20 @@
                 redrawCanvas();
 
                 pieces.forEach((piece) => {
+                  const isAndroid = /Android/i.test(navigator.userAgent);
+                  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+                  if (isAndroid) {
+                      var po = 0.065;
+                  } else if (isIOS) {
+                      var po = 0.065;
+                  } else {
+                      var po = 0.025;
+                  }
+
                     piece.x += piece.dx;
                     piece.y += piece.dy;
-                    piece.opacity -= 0.075; // Gradually reduce opacity
+                    piece.opacity -= po; // Gradually reduce opacity
 
                     if (piece.opacity > 0) {
                         ctx.globalAlpha = piece.opacity; // Apply opacity
