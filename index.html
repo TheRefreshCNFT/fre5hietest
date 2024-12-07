@@ -171,7 +171,7 @@
         const CENTER_X = canvas.width / 2;
         const CENTER_Y = canvas.height / 2;
         const RADIUS = Math.min(canvas.width, canvas.height) / 2 - 40;
-        const RECT_COUNT = 5;
+        const RECT_COUNT = 15;
 
         let rectangles = [];
         let lastClickedRectangle = null;
@@ -261,9 +261,9 @@
                   if (isAndroid) {
                       var po = 0.060;
                   } else if (isIOS) {
-                      var po = 0.075;
+                      var po = 0.060;
                   } else {
-                      var po = 0.065;
+                      var po = 0.07;
                   }
 
                     piece.x += piece.dx;
