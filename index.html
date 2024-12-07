@@ -205,50 +205,56 @@
         }
 
         function breakRectangle(rect) {
-    const pieces = [];
-    const pieceCount = Math.floor((rect.width * rect.height) / 2500);
+            const pieces = [];
+            const pieceCount = Math.floor((rect.width * rect.height) / 2500);
 
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    const dyRange = isAndroid || isIOS ? [2, 4.75] : [2, 5];       // Slower falling speed on mobile
+            for (let i = 0; i < pieceCount; i++) {
+                const piece = {
+                    x: rect.x + rF(0, rect.width),
+                    y: rect.y + rF(0, rect.height),
+                    dx: rF(-5, 5), // Random x movement in all directions
+                    dy: rF(-5, 5), // Random y movement in all directions
+                    width: rF(10, 20),
+                    height: rF(10, 20),
+                    color: randomPaletteColor(),
+                    opacity: 1.0, // Initial opacity (fully visible)
+                };
+                pieces.push(piece);
+            }
 
-    for (let i = 0; i < pieceCount; i++) {
-        const piece = {
-            x: rect.x + rF(0, rect.width),
-            y: rect.y + rF(0, rect.height),
-            dx: rF(-1, 1), // Random x movement
-            dy: rF(...dyRange), // Random y movement (falling down)
-            width: rF(10, 20),
-            height: rF(10, 20),
-            color: randomPaletteColor(),
-        };
-        pieces.push(piece);
-    }
-
-    return pieces;
-}
-
-function animatePieces(pieces, callback) {
-    function step() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        redrawCanvas();
-
-        pieces.forEach((piece) => {
-            piece.x += piece.dx;
-            piece.y += piece.dy;
-            ctx.fillStyle = piece.color;
-            ctx.fillRect(piece.x, piece.y, piece.width, piece.height);
-        });
-
-        if (pieces.some(piece => piece.y < canvas.height)) {
-            requestAnimationFrame(step);
-        } else if (callback) {
-            callback(); // Trigger callback (e.g., displayWinnerMessage) after animation
+            return pieces;
         }
-    }
 
-    step();
-}
+
+        function animatePieces(pieces, callback) {
+            function step() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                redrawCanvas();
+
+                pieces.forEach((piece) => {
+                    piece.x += piece.dx;
+                    piece.y += piece.dy;
+                    piece.opacity -= 0.05; // Gradually reduce opacity
+
+                    if (piece.opacity > 0) {
+                        ctx.globalAlpha = piece.opacity; // Apply opacity
+                        ctx.fillStyle = piece.color;
+                        ctx.fillRect(piece.x, piece.y, piece.width, piece.height);
+                        ctx.globalAlpha = 1.0; // Reset opacity
+                    }
+                });
+
+                // Continue animation while pieces are visible
+                if (pieces.some(piece => piece.opacity > 0)) {
+                    requestAnimationFrame(step);
+                } else if (callback) {
+                    callback(); // Trigger callback after animation finishes
+                }
+            }
+
+            step();
+        }
+
 
 
         function createRectangle() {
@@ -308,20 +314,23 @@ function animatePieces(pieces, callback) {
         }
 
         function displayWinnerMessage() {
+            console.log('Displaying Winner Message'); // Debug log
             ctx.save(); // Save the current canvas state
-            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
 
-            const randomColor = randomPaletteColor();
+            // Set dimensions for the winner message
             const rectWidth = 300;
             const rectHeight = 100;
-
             const rectX = CENTER_X - rectWidth / 2;
             const rectY = CENTER_Y - rectHeight / 2;
 
-            ctx.fillStyle = randomColor;
+            // Clear the canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear everything
+
+            // Draw the background rectangle
+            ctx.fillStyle = randomPaletteColor();
             ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
 
-            ctx.fillStyle = 'white';
+            // Draw the winner text
             ctx.font = 'bold 24px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -332,6 +341,7 @@ function animatePieces(pieces, callback) {
 
             ctx.restore(); // Restore the canvas state
         }
+
 
 
         function startTimer() {
@@ -355,6 +365,8 @@ function animatePieces(pieces, callback) {
 
         let isGameActive = true;
 
+        //const winnerMessageDelay = 200; // Control delay for winner message (1 second)
+
         canvas.addEventListener('click', (e) => {
             const rect = canvas.getBoundingClientRect();
             const x = (e.clientX - rect.left) * (canvas.width / rect.width);
@@ -370,7 +382,6 @@ function animatePieces(pieces, callback) {
                 clicksDisplay.textContent = `Clicks: ${clickCount}`;
             }
 
-            // Check if the last clicked rectangle was clicked
             if (lastClickedRectangle && ctx.isPointInPath(lastClickedRectangle, x, y)) {
                 zzfx(...correctSound);
 
@@ -378,24 +389,32 @@ function animatePieces(pieces, callback) {
                 const rect = rectangles.pop();
                 counterDisplay.textContent = `Remaining: ${rectangles.length}`;
 
-                // Break the rectangle into pieces and animate them
-                const pieces = breakRectangle(rect);
-
                 if (rectangles.length === 0) {
+                    // Game is over, skip animation and display winner message
                     stopTimer();
-                    isGameActive = false; // Disable further clicks on the canvas
-                    // Animate pieces and display winner message after animation finishes
-                    animatePieces(pieces, () => {
-                        displayWinnerMessage(); // Display the winner message
-                        playWinnerTune();
-                    });
+                    isGameActive = false;
+
+                    //ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear everything
+
+                    playWinnerTune(); // Play the winner tune
+                    displayWinnerMessage(); // Show the winner message
                 } else {
-                    animatePieces(pieces);
+                    // Animate the breaking of the clicked rectangle
+                    const pieces = breakRectangle(rect);
+                    animatePieces(pieces, () => {
+                        redrawCanvas(); // Redraw the remaining rectangles after animation
+                    });
                 }
             } else if (rectangles.length > 0) {
                 zzfx(...incorrectSound);
             }
         });
+
+
+
+
+
+
 
 
 
