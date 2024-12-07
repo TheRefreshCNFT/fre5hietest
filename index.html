@@ -1,188 +1,486 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body, html {
-      padding:0 !important;
-      margin: 0 !important;
-    }
-    * {
-      padding: 0;
-      margin: 0;
-    }
-    body {
-      background-color: black;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; }
+        html, body { width: 100%; height: 100%; background-color: black; overflow: hidden; }
+        canvas { display: block; }
+
+        #stats {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 1px 0px;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            color: white;
+            border-radius: 5px;
+        }
+
+        #stats div {
+            font-size: 18px;
+            margin: 0;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+        }
+
+        #stats div:not(:last-child) {
+            margin-right: 14px;
+        }
+
+        #icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .icon-box {
+            width: 34px;
+            height: 34px;
+            font-size: 22px;
+            text-align: center;
+            line-height: 36px;
+            background-color: #2a74c1;
+            border-radius: 4px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5), -1px -1px 2px rgba(255, 255, 255, 0.5);
+            vertical-align: middle;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .flash {
+            animation: flashEffect 0.2s ease-in-out;
+          }
+
+        @keyframes flashEffect {
+            0% {
+              background-color: white;
+              color: black;
+            }
+            100% {
+              background-color: #2a74c1; /* Original background color */
+              color: white; /* Original text color */
+            }
+          }
+
+        @media (max-width: 600px) {
+            #stats {
+                padding: 1px 0px;
+            }
+
+            #stats div {
+                font-size: 20px;
+            }
+
+            .icon-box {
+              width: 34px;
+              height: 34px;
+              font-size: 24px;
+              line-height: 36px;
+        }
+      }
+
+        @media (max-width: 400px) {
+
+            #stats div {
+                font-size: 12px;
+            }
+
+            #stats div:not(:last-child) {
+            margin-right: 8px;
+            }
+
+            .icon-box {
+                width: 30px;
+                height: 30px;
+                font-size: 20px;
+                line-height: 32px;
+            }
+
+            #icons {
+                gap: 10px;
+            }
+        }
+
+    </style>
 </head>
 <body>
-  <div style="text-align:center">
-    <canvas id="myCanvasGrad" style="object-fit: contain; top: 0; left: 0; position: absolute;"></canvas>
-  </div>
-  <script>
-    // Get random numbers
-    function getRandomInt(min, max) {
-      return Math.floor(Math.random() * (max - min + 1) + min);
+    <canvas id="interactiveCanvas"></canvas>
+    <div id="stats">
+        <div id="timer">00:00</div>
+        <div id="clicks">Clicks: 0</div>
+        <div id="counter">Remaining: 15</div>
+        <div id="icons">
+            <span class="icon-box" id="refreshIcon">&#128260;</span>
+            <span class="icon-box" id="downloadIcon">&#11015;&#65039;</span>
+            <span id="saveStats" class="icon-box">&#127942;</span>
+        </div>
+    </div>
+    <script>
+
+        function releaseCanvas(canvas) {
+          canvas.width = 1;
+          canvas.style.width = "1vw";
+          canvas.height = 1;
+          canvas.style.height = "1vh";
+          const ctx = canvas.getContext('2d');
+          ctx && ctx.clearRect(0, 0, 1, 1);
+          canvas.remove();
+        }
+
+        let alpha;
+        let gl;
+        let buffer;
+          let zzfx=(...t)=>zzfxP(zzfxG(...t))
+          let zzfxP=(...t)=>{let e=zzfxX.createBufferSource(),f=zzfxX.createBuffer(t.length,t[0].length,zzfxR);t.map((d,i)=>f.getChannelData(i).set(d)),e.buffer=f,e.connect(zzfxX.destination),e.start();return e}
+          let zzfxG=(q=1,k=.05,c=220,e=0,t=0,u=.1,r=0,F=1,v=0,z=0,w=0,A=0,l=0,B=0,x=0,G=0,d=0,y=1,m=0,C=0)=>{let b=2*Math.PI,H=v*=500*b/zzfxR**2,I=(0<x?1:-1)*b/4,D=c*=(1+2*k*Math.random()-k)*b/zzfxR,Z=[],g=0,E=0,a=0,n=1,J=0,K=0,f=0,p,h;e=99+zzfxR*e;m*=zzfxR;t*=zzfxR;u*=zzfxR;d*=zzfxR;z*=500*b/zzfxR**3;x*=b/zzfxR;w*=b/zzfxR;A*=zzfxR;l=zzfxR*l|0;for(h=e+m+t+u+d|0;a<h;Z[a++]=f)++K%(100*G|0)||(f=r?1<r?2<r?3<r?Math.sin((g%b)**3):Math.max(Math.min(Math.tan(g),1),-1):1-(2*g/b%2+2)%2:1-4*Math.abs(Math.round(g/b)-g/b):Math.sin(g),f=(l?1-C+C*Math.sin(2*Math.PI*a/l):1)*(0<f?1:-1)*Math.abs(f)**F*q*zzfxV*(a<e?a/e:a<e+m?1-(a-e)/m*(1-y):a<e+m+t?y:a<h-d?(h-a-d)/u*y:0),f=d?f/2+(d>a?0:(a<h-d?1:(h-a)/d)*Z[a-d|0]/2):f),p=(c+=v+=z)*Math.sin(E*x-I),g+=p-p*B*(1-1E9*(Math.sin(a)+1)%2),E+=p-p*B*(1-1E9*(Math.sin(a)**2+1)%2),n&&++n>A&&(c+=w,D+=w,n=0),!l||++J%l||(c=D,v=H,n=n||1);return Z}
+          let zzfxV=.3;
+          let zzfxR=44100;
+          let zzfxX=new(window.AudioContext||webkitAudioContext);
+          let zzfxM=(n,f,t,e=125)=>{let l,o,z,r,g,h,x,a,u,c,d,i,m,p,G,M=0,R=[],b=[],j=[],k=0,q=0,s=1,v={},w=zzfxR/e*60>>2;for(;s;k++)R=[s=a=d=m=0],t.map((e,d)=>{for(x=f[e][k]||[0,0,0],s|=!!f[e][k],G=m+(f[e][0].length-2-!a)*w,p=d==t.length-1,o=2,r=m;o<x.length+p;a=++o){for(g=x[o],u=o==x.length+p-1&&p||c!=(x[0]||0)|g|0,z=0;z<w&&a;z++>w-99&&u?i+=(i<1)/99:0)h=(1-i)*R[M++]/2||0,b[r]=(b[r]||0)-h*q+h,j[r]=(j[r++]||0)+h*q+h;g&&(i=g%1,q=x[1]||0,(g|=0)&&(R=v[[c=x[M=0]||0,g]]=v[[c,g]]||(l=[...n[c]],l[2]*=2**((g-12)/12),g>0?zzfxG(...l):[])))}m=G});return[b,j]};
+
+          function playWinnerTune() {
+              zzfx(...[.1,,128,.08,.22,.2,,.71,,-1.5,-924,.05,.12,.09,.33,.12,.09]);
+              setTimeout(() => zzfx(...[.1,,150,.08,.22,.2,,.71,,-1.5,-850,.05,.12,.09,.33,.12,.09]), 200);
+              setTimeout(() => zzfx(...[.1,,110,.08,.22,.2,,.71,,-1.5,-1000,.05,.12,.09,.33,.12,.09]), 400);
+              setTimeout(() => zzfx(...[.1,,128,.08,.22,.2,,.71,,-1.5,-924,.05,.12,.09,.33,.12,.09]), 600);
+              setTimeout(() => zzfx(...[.1,,140,.08,.22,.2,,.71,,-1.5,-890,.05,.12,.09,.33,.12,.09]), 800);
+          }
+
+
+        const canvas = document.getElementById('interactiveCanvas');
+        const ctx = canvas.getContext('2d');
+        const timerDisplay = document.getElementById('timer');
+        const clicksDisplay = document.getElementById('clicks');
+        const counterDisplay = document.getElementById('counter');
+        const refreshIcon = document.getElementById('refresh');
+        const downloadIcon = document.getElementById('download');
+        const saveStatsIcon = document.getElementById('saveStats');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const CENTER_X = canvas.width / 2;
+        const CENTER_Y = canvas.height / 2;
+        const RADIUS = Math.min(canvas.width, canvas.height) / 2 - 40;
+        const RECT_COUNT = 15;
+
+        let rectangles = [];
+        let lastClickedRectangle = null;
+        let timerInterval = null;
+        let startTime = null;
+        let clickCount = 0;
+
+        const colorPalette = ['Red', 'Yellow', 'DarkRed', 'Black'];
+
+        function addFlashEffect(element) {
+        element.classList.add('flash');
+        setTimeout(() => {
+            element.classList.remove('flash');
+        }, 200);
+        }
+
+        function randomPaletteColor() {
+            return colorPalette[Math.floor(Math.random() * colorPalette.length)];
+        }
+
+        function rF(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function createGradient() {
+            const gradient = ctx.createRadialGradient(CENTER_X, CENTER_Y, 0, CENTER_X, CENTER_Y, RADIUS);
+            gradient.addColorStop(Math.random(), randomPaletteColor());
+            gradient.addColorStop(Math.random(), randomPaletteColor());
+            gradient.addColorStop(1, 'Black');
+            return gradient;
+        }
+
+        function breakRectangle(rect) {
+    const pieces = [];
+    const pieceCount = Math.floor((rect.width * rect.height) / 2500);
+
+    for (let i = 0; i < pieceCount; i++) {
+        const piece = {
+            x: rect.x + rF(0, rect.width),
+            y: rect.y + rF(0, rect.height),
+            dx: rF(-1, 1), // Random x movement
+            dy: rF(2, 5),  // Random y movement (falling down)
+            width: rF(10, 20),
+            height: rF(10, 20),
+            color: randomPaletteColor(),
+        };
+        pieces.push(piece);
     }
 
-    function getRandomDec(min, max) {
-      return Math.random() * (max - min) + min;
+    return pieces;
+}
+
+function animatePieces(pieces, callback) {
+    function step() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        redrawCanvas();
+
+        pieces.forEach((piece) => {
+            piece.x += piece.dx;
+            piece.y += piece.dy;
+            ctx.fillStyle = piece.color;
+            ctx.fillRect(piece.x, piece.y, piece.width, piece.height);
+        });
+
+        if (pieces.some(piece => piece.y < canvas.height)) {
+            requestAnimationFrame(step);
+        } else if (callback) {
+            callback(); // Trigger callback (e.g., displayWinnerMessage) after animation
+        }
     }
 
-    // Release canvas from memory
-    function releaseCanvas(canvas) {
-      canvas.width = 1;
-      canvas.style.width = "1vw";
-      canvas.height = 1;
-      canvas.style.height = "1vh";
-      const ctx = canvas.getContext('2d');
-      ctx && ctx.clearRect(0, 0, 1, 1);
-      canvas.remove();
-    }
+    step();
+}
 
-    // Globals
-    const c1 = "#d11a58";
-    const c2 = "#e95629";
-    const c3 = "#f6e902";
-    const c4 = "#f4aa3e";
-    const c5 = "#b8202b";
-    const c6 = "#1e292d"; //#1e292d
 
-    // Canvas dimensions (4K Square Canvas)
-    const canvasWidth = 4096;
-    const canvasHeight = 4096;
+        function createRectangle() {
+            const angle = Math.random() * 2 * Math.PI;
+            const distance = Math.random() * (RADIUS * 0.85);
+            const width = Math.random() * (canvas.width * 0.4) + (canvas.width * 0.05);
+            const height = Math.random() * (canvas.height * 0.4) + (canvas.height * 0.05);
 
-    // Ring parameters for easy adjustments
-    const ringMinX = 512;
-    const ringMaxX = 3600;
-    const ringMinY = 512;
-    const ringMaxY = 3600;
-    const ringMinRadius = 50;
-    const ringMaxRadius = 300;
-    const ringMinThickness = 1024;
-    const ringMaxThickness = 2944;
 
-    // Canvas and context
-    const canvasGrad = document.getElementById('myCanvasGrad');
-    const ctxGrad = canvasGrad.getContext("2d");
+            const x = Math.max(
+                Math.min(CENTER_X + Math.cos(angle) * distance - width / 2, canvas.width - width),
+                0
+            );
+            const y = Math.max(
+                Math.min(CENTER_Y + Math.sin(angle) * distance - height / 2, canvas.height - height),
+                0
+            );
 
-    // Function to draw canvas
-    function drawCanvas(width, height) {
-      // Update canvas dimensions
-      canvasGrad.width = width;
-      canvasGrad.height = height;
-      canvasGrad.style.width = "100vw";
-      canvasGrad.style.height = "100vh";
+            const gradient = createGradient();
+            return { x, y, width, height, gradient, path: new Path2D() };
+        }
 
-      // Clear previous drawing
-      ctxGrad.clearRect(0, 0, width, height);
-      ctxGrad.fillStyle = "#000000";
-      ctxGrad.fillRect(0, 0, width, height);
 
-      // Utility function for generating random values within a scaled range
-      function scaledRandomDec(min, max) {
-        return getRandomDec(min, max);
-      }
+        function drawRectangle(rect) {
+            rect.path.rect(rect.x, rect.y, rect.width, rect.height);
+            ctx.fillStyle = rect.gradient;
+            ctx.globalAlpha = 0.7;
+            ctx.fill(rect.path);
+        }
 
-      // Create Ring 1
-      var x0_1 = scaledRandomDec(ringMinX, ringMaxX);
-      var y0_1 = scaledRandomDec(ringMinY, ringMaxY);
-      var r0_1 = scaledRandomDec(ringMinRadius, ringMaxRadius);
-      var r1_1 = r0_1 + scaledRandomDec(ringMinThickness, ringMaxThickness); // Ensure r1 is always larger than r0
-      var x1_1 = x0_1 + scaledRandomDec(-400, 400);
-      var y1_1 = y0_1 + scaledRandomDec(-400, 400);
+        function initializeRectangles() {
+            rectangles = [];
+            for (let i = 0; i < RECT_COUNT; i++) {
+                rectangles.push(createRectangle());
+            }
+            counterDisplay.textContent = `Remaining: ${rectangles.length}`;
+        }
 
-      var ring1 = ctxGrad.createRadialGradient(x0_1, y0_1, r0_1, x1_1, y1_1, r1_1);
-      ring1.addColorStop(Math.random(), "transparent");
-      ring1.addColorStop(Math.random(), c5);
-      ring1.addColorStop(Math.random(), c5);
-      ring1.addColorStop(Math.random(), "transparent");
-      ring1.addColorStop(1, c6);
-      ctxGrad.globalAlpha = 0.8;
-      ctxGrad.fillStyle = ring1;
-      ctxGrad.fillRect(0, 0, canvasWidth, canvasHeight);
+        function redrawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Create Ring 2
-      var x0_2 = scaledRandomDec(ringMinX, ringMaxX);
-      var y0_2 = scaledRandomDec(ringMinY, ringMaxY);
-      var r0_2 = scaledRandomDec(ringMinRadius, ringMaxRadius);
-      var r1_2 = r0_2 + scaledRandomDec(ringMinThickness, ringMaxThickness); // Ensure r1 is always larger than r0
-      var x1_2 = x0_2 + scaledRandomDec(-400, 400);
-      var y1_2 = y0_2 + scaledRandomDec(-400, 400);
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(CENTER_X, CENTER_Y, RADIUS, 0, 2 * Math.PI);
+            ctx.clip();
 
-      var ring2 = ctxGrad.createRadialGradient(x0_2, y0_2, r0_2, x1_2, y1_2, r1_2);
-      ring2.addColorStop(Math.random(), "transparent");
-      ring2.addColorStop(Math.random(), c1);
-      ring2.addColorStop(Math.random(), c2);
-            ring2.addColorStop(Math.random(), "transparent");
-      ring2.addColorStop(Math.random(), c3);
-      ring2.addColorStop(Math.random(), c4);
-      ring2.addColorStop(Math.random(), "transparent");
-      //ring2.addColorStop(Math.random(), c4);
-      //ring2.addColorStop(Math.random(), "transparent");
-      ctxGrad.globalAlpha = 1;
-      ctxGrad.fillStyle = ring2;
-      ctxGrad.fillRect(0, 0, canvasWidth, canvasHeight);
+            rectangles.forEach((rect, index) => {
+                drawRectangle(rect);
+                if (index === rectangles.length - 1) {
+                    lastClickedRectangle = rect.path;
+                }
+            });
 
-      // Create Ring 3
-      var x0_3 = scaledRandomDec(ringMinX, ringMaxX);
-      var y0_3 = scaledRandomDec(ringMinY, ringMaxY);
-      var r0_3 = scaledRandomDec(ringMinRadius, ringMaxRadius);
-      var r1_3 = r0_3 + scaledRandomDec(ringMinThickness, ringMaxThickness); // Ensure r1 is always larger than r0
-      var x1_3 = x0_3 + scaledRandomDec(-400, 400);
-      var y1_3 = y0_3 + scaledRandomDec(-400, 400);
+            ctx.restore();
+        }
 
-      var ring3 = ctxGrad.createRadialGradient(x0_3, y0_3, r0_3, x1_3, y1_3, r1_3);
-      ring3.addColorStop(Math.random(), "transparent");
-      ring3.addColorStop(Math.random(), c5);
-      ring3.addColorStop(Math.random(), c5);
-      ring3.addColorStop(Math.random(), "transparent");
+        function displayWinnerMessage() {
+            ctx.save(); // Save the current canvas state
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
 
-      ring3.addColorStop(1, c6);
-      ctxGrad.globalAlpha = 0.5;
-      ctxGrad.fillStyle = ring3;
-      ctxGrad.fillRect(0, 0, canvasWidth, canvasHeight);
-    }
+            const randomColor = randomPaletteColor();
+            const rectWidth = 300;
+            const rectHeight = 100;
 
-    // Initial draw (4K resolution)
-    drawCanvas(canvasWidth, canvasHeight);
+            const rectX = CENTER_X - rectWidth / 2;
+            const rectY = CENTER_Y - rectHeight / 2;
 
-    // Single-click: Redraw the canvas
-    let timer;
-    document.getElementById("myCanvasGrad").addEventListener('click', event => {
-      if (event.detail === 1) {
-        timer = setTimeout(() => {
-          drawCanvas(canvasWidth, canvasHeight); // Redraw at original resolution
-        }, 250);
-      }
-    });
+            ctx.fillStyle = randomColor;
+            ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
 
-    // Double-click: Save the canvas
-    document.getElementById("myCanvasGrad").addEventListener('dblclick', event => {
-      // Prevent the default behavior of the click event
-      event.preventDefault();
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = 'black';
+            ctx.fillText('WINNER!', rectX + rectWidth / 2 + 2, rectY + rectHeight / 2 + 2);
+            ctx.fillStyle = 'white';
+            ctx.fillText('WINNER!', rectX + rectWidth / 2, rectY + rectHeight / 2);
 
-      // Clear the timeout set for the single click event
-      clearTimeout(timer);
+            ctx.restore(); // Restore the canvas state
+        }
 
-      // Create a data URL for the canvas content
-      const dataURL = canvasGrad.toDataURL("image/png");
 
-      // Create a link element and trigger the download
-      const link = document.createElement('a');
-      link.href = dataURL;
-      link.download = 'F5.png';
-      link.click();
-    });
+        function startTimer() {
+            if (timerInterval) return;
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = String(Math.floor(elapsedTime / 60)).padStart(2, '0');
+                const seconds = String(elapsedTime % 60).padStart(2, '0');
+                timerDisplay.textContent = `${minutes}:${seconds}`;
+            }, 1000);
+        }
 
-    /*Run release even when they refresh not with click (F5, refresh button, closing page)*/
-          window.addEventListener('pagehide', (event) => {
-          /*Release every canvas*/
-          var canvases = document.getElementsByTagName("canvas");
-          var canvasesList = Array.prototype.slice.call(canvases);
+        function stopTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        const correctSound = [.1,,128,.08,.22,.2,,.71,,-1.5,-924,.05,.12,.09,.33,.12,.09];
+        const incorrectSound = [.9,,75,.01,.01,.2,,.71,,-1.5,-924,1.05,.12,.09,.33,.12,.09];
+
+        let isGameActive = true;
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            // Prevent further clicks after the game ends
+            if (!isGameActive) return;
+
+            if (!startTime) startTimer();
+
+            if (rectangles.length > 0) {
+                clickCount++;
+                clicksDisplay.textContent = `Clicks: ${clickCount}`;
+            }
+
+            // Check if the last clicked rectangle was clicked
+            if (lastClickedRectangle && ctx.isPointInPath(lastClickedRectangle, x, y)) {
+                zzfx(...correctSound);
+
+                // Remove the clicked rectangle
+                const rect = rectangles.pop();
+                counterDisplay.textContent = `Remaining: ${rectangles.length}`;
+
+                // Break the rectangle into pieces and animate them
+                const pieces = breakRectangle(rect);
+
+                if (rectangles.length === 0) {
+                    stopTimer();
+                    isGameActive = false; // Disable further clicks on the canvas
+                    // Animate pieces and display winner message after animation finishes
+                    animatePieces(pieces, () => {
+                        displayWinnerMessage(); // Display the winner message
+                        playWinnerTune();
+                    });
+                } else {
+                    animatePieces(pieces);
+                }
+            } else if (rectangles.length > 0) {
+                zzfx(...incorrectSound);
+            }
+        });
+
+
+
+
+        document.getElementById('refreshIcon').addEventListener('click', () => {
+            addFlashEffect(document.getElementById('refreshIcon'));
+            location.reload();
+        });
+
+        document.getElementById('downloadIcon').addEventListener('click', () => {
+            const upscaleResolution = 2048; // 2K resolution
+            const offscreenCanvas = document.createElement('canvas');
+            const offscreenCtx = offscreenCanvas.getContext('2d');
+
+            // Set the offscreen canvas to 2K resolution
+            offscreenCanvas.width = upscaleResolution;
+            offscreenCanvas.height = upscaleResolution;
+
+            // Fill the background with black
+            offscreenCtx.fillStyle = 'black';
+            offscreenCtx.fillRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+
+            // Save the aspect ratio of the original canvas
+            const scale = upscaleResolution / (Math.min(canvas.width, canvas.height));
+            const scaledWidth = canvas.width * scale;
+            const scaledHeight = canvas.height * scale;
+            const offsetX = (upscaleResolution - scaledWidth) / 2;
+            const offsetY = (upscaleResolution - scaledHeight) / 2;
+
+            offscreenCtx.drawImage(
+                canvas,
+                offsetX,
+                offsetY,
+                scaledWidth,
+                scaledHeight
+            );
+
+            const link = document.createElement('a');
+            link.download = 'art-2k.png';
+            link.href = offscreenCanvas.toDataURL('image/png');
+            link.click();
+        });
+
+
+        saveStatsIcon.addEventListener('click', () => {
+            addFlashEffect(document.getElementById('saveStats'));
+            const offscreenCanvas = document.createElement('canvas');
+            const offscreenCtx = offscreenCanvas.getContext('2d');
+
+            offscreenCanvas.width = 300;
+            offscreenCanvas.height = 250;
+
+            const now = new Date();
+            const date = now.toLocaleDateString();
+            const time = now.toLocaleTimeString();
+
+            offscreenCtx.fillStyle = 'black';
+            offscreenCtx.fillRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+
+            offscreenCtx.fillStyle = 'white';
+            offscreenCtx.font = '16px Arial';
+            offscreenCtx.fillText(`Date: ${date}`, 10, 40);
+            offscreenCtx.fillText(`Time: ${time}`, 10, 70);
+            offscreenCtx.fillText(`Starting Rectangles: ${RECT_COUNT}`, 10, 110);
+            offscreenCtx.fillText(timerDisplay.textContent, 10, 150);
+            offscreenCtx.fillText(clicksDisplay.textContent, 10, 190);
+            offscreenCtx.fillText(counterDisplay.textContent, 10, 230);
+
+            const link = document.createElement('a');
+            link.download = 'stats.png';
+            link.href = offscreenCanvas.toDataURL('image/png');
+            link.click();
+        });
+
+        initializeRectangles();
+        redrawCanvas();
+
+        window.addEventListener('resize', () => {
+             canvas.width = window.innerWidth;
+             canvas.height = window.innerHeight;
+             initializeRectangles();
+             redrawCanvas();
+         });
+
+                window.addEventListener('pagehide', (event) => {
+                var canvases = document.getElementsByTagName("canvas");
+                var canvasesList = Array.prototype.slice.call(canvases);
                 canvasesList.forEach(releaseCanvas);
-          });
-  </script>
+                });
+    </script>
 </body>
 </html>
