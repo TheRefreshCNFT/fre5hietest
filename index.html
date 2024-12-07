@@ -220,15 +220,15 @@
                 wid = [12, 24];
                 hei = [12, 24];
             } else if (isIOS) {
-                dxRange = [-5, 5];
-                dyRange = [-5, 5]; // Slower speeds for iOS
+                dxRange = [-10, 10];
+                dyRange = [-10, 10]; // Slower speeds for iOS
                 wid = [7, 14];
                 hei = [7, 14];
             } else {
                 dxRange = [-15, 15];
                 dyRange = [-15, 15];
-                wid = [15, 30];
-                hei = [15, 30];
+                wid = [10, 20];
+                hei = [10, 20];
             }
 
             for (let i = 0; i < pieceCount; i++) {
@@ -261,9 +261,9 @@
                   if (isAndroid) {
                       var po = 0.060;
                   } else if (isIOS) {
-                      var po = 0.060;
+                      var po = 0.065;
                   } else {
-                      var po = 0.07;
+                      var po = 0.065;
                   }
 
                     piece.x += piece.dx;
