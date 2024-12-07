@@ -171,7 +171,7 @@
         const CENTER_X = canvas.width / 2;
         const CENTER_Y = canvas.height / 2;
         const RADIUS = Math.min(canvas.width, canvas.height) / 2 - 40;
-        const RECT_COUNT = 15;
+        const RECT_COUNT = 5;
 
         let rectangles = [];
         let lastClickedRectangle = null;
@@ -179,7 +179,7 @@
         let startTime = null;
         let clickCount = 0;
 
-        const colorPalette = ['Red', 'Yellow', 'DarkRed', 'Black'];
+        const colorPalette = ['Red', 'Yellow', 'DarkRed', 'Purple'];
 
         function addFlashEffect(element) {
         element.classList.add('flash');
@@ -206,7 +206,7 @@
 
         function breakRectangle(rect) {
             const pieces = [];
-            const pieceCount = Math.floor((rect.width * rect.height) / 3500);
+            const pieceCount = Math.floor((rect.width * rect.height) / 2500);
 
                     // Detect device type
             const isAndroid = /Android/i.test(navigator.userAgent);
@@ -225,10 +225,10 @@
                 wid = [5, 10];
                 hei = [5, 10];
             } else {
-                dxRange = [-5, 5];
-                dyRange = [-5, 5];
-                wid = [10, 20];
-                hei = [10, 20];
+                dxRange = [-15, 15];
+                dyRange = [-15, 15];
+                wid = [15, 30];
+                hei = [15, 30];
             }
 
             for (let i = 0; i < pieceCount; i++) {
@@ -263,7 +263,7 @@
                   } else if (isIOS) {
                       var po = 0.065;
                   } else {
-                      var po = 0.025;
+                      var po = 0.065;
                   }
 
                     piece.x += piece.dx;
