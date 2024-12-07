@@ -206,7 +206,7 @@
 
         function breakRectangle(rect) {
             const pieces = [];
-            const pieceCount = Math.floor((rect.width * rect.height) / 2500);
+            const pieceCount = Math.floor((rect.width * rect.height) / 1500);
 
                     // Detect device type
             const isAndroid = /Android/i.test(navigator.userAgent);
@@ -215,15 +215,15 @@
             // Adjust speeds for devices
             let dxRange, dyRange;
             if (isAndroid) {
-                dxRange = [-7, 7];
-                dyRange = [-7, 7]; // Slower speeds for Android
-                wid = [10, 20];
-                hei = [10, 20];
+                dxRange = [-5, 5];
+                dyRange = [-5, 5]; // Slower speeds for Android
+                wid = [12, 24];
+                hei = [12, 24];
             } else if (isIOS) {
-                dxRange = [-3, 3];
-                dyRange = [-3, 3]; // Slower speeds for iOS
-                wid = [5, 10];
-                hei = [5, 10];
+                dxRange = [-5, 5];
+                dyRange = [-5, 5]; // Slower speeds for iOS
+                wid = [7, 14];
+                hei = [7, 14];
             } else {
                 dxRange = [-15, 15];
                 dyRange = [-15, 15];
