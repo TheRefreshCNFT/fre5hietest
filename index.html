@@ -216,18 +216,18 @@
             let dxRange, dyRange;
             if (isAndroid) {
                 dxRange = [-3, 3];
-                dyRange = [-3, 3]; // Slower speeds for Android
-                wid = [5, 10];
+                dyRange = [-3, 3];
+                wid = [5, 20];
                 hei = [5, 10];
             } else if (isIOS) {
                 dxRange = [-4, 4];
-                dyRange = [-4, 4]; // Slower speeds for iOS
-                wid = [5, 10];
+                dyRange = [-4, 4];
+                wid = [5, 20];
                 hei = [5, 10];
             } else {
                 dxRange = [-3, 3];
                 dyRange = [-3, 3];
-                wid = [50, 10];
+                wid = [10, 50];
                 hei = [5, 10];
             }
 
@@ -261,7 +261,7 @@
                   if (isAndroid) {
                       var po = 0.060;
                   } else if (isIOS) {
-                      var po = 0.065;
+                      var po = 0.075;
                   } else {
                       var po = 0.060;
                   }
