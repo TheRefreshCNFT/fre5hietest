@@ -208,12 +208,16 @@
     const pieces = [];
     const pieceCount = Math.floor((rect.width * rect.height) / 2500);
 
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const dyRange = isAndroid || isIOS ? [1, 4] : [2, 5];       // Slower falling speed on mobile
+
     for (let i = 0; i < pieceCount; i++) {
         const piece = {
             x: rect.x + rF(0, rect.width),
             y: rect.y + rF(0, rect.height),
             dx: rF(-1, 1), // Random x movement
-            dy: rF(2, 5),  // Random y movement (falling down)
+            dy: rF(...dyRange), // Random y movement (falling down)
             width: rF(10, 20),
             height: rF(10, 20),
             color: randomPaletteColor(),
