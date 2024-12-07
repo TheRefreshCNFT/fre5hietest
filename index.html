@@ -210,7 +210,7 @@
 
     const isAndroid = /Android/i.test(navigator.userAgent);
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    const dyRange = isAndroid || isIOS ? [1.5, 4.5] : [2, 5];       // Slower falling speed on mobile
+    const dyRange = isAndroid || isIOS ? [2, 4.75] : [2, 5];       // Slower falling speed on mobile
 
     for (let i = 0; i < pieceCount; i++) {
         const piece = {
