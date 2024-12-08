@@ -179,7 +179,7 @@
         let startTime = null;
         let clickCount = 0;
 
-        const colorPalette = ['Red', 'Yellow', 'DarkRed', 'Purple'];
+        const colorPalette = ['Black', 'Blue', 'Black', 'Red'];
 
         function addFlashEffect(element) {
         element.classList.add('flash');
@@ -200,7 +200,11 @@
             const gradient = ctx.createRadialGradient(CENTER_X, CENTER_Y, 0, CENTER_X, CENTER_Y, RADIUS);
             gradient.addColorStop(Math.random(), randomPaletteColor());
             gradient.addColorStop(Math.random(), randomPaletteColor());
-            gradient.addColorStop(1, 'Black');
+            gradient.addColorStop(Math.random(), randomPaletteColor());
+            gradient.addColorStop(Math.random(), randomPaletteColor());
+            gradient.addColorStop(Math.random(), randomPaletteColor());
+            gradient.addColorStop(Math.random(), randomPaletteColor());
+            gradient.addColorStop(1, 'red');
             return gradient;
         }
 
@@ -259,7 +263,7 @@
                   const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
                   if (isAndroid) {
-                      var po = 0.065;
+                      var po = 0.075;
                   } else if (isIOS) {
                       var po = 0.2;
                   } else {
