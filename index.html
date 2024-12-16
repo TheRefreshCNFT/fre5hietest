@@ -10,23 +10,24 @@
 
         /* Default styles for larger screens */
         #stats {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
             display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 1px 0px;
-            box-sizing: border-box;
+            justify-content: space-between; /* Ensure even spacing between stats and icons */
+            align-items: center; /* Vertically center all content */
+            padding: 10px 20px; /* Add some padding around the stats section */
             font-family: Arial, sans-serif;
             color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            flex-wrap: nowrap; /* Prevent stacking */
+        }
+
+        #timer, #clicks, #counter {
+            font-size: 15px;
+            white-space: nowrap; /* Ensure text stays on one line */
         }
 
         #icons {
-            display: flex;
-            gap: 15px;
+            display: flex; /* Keep buttons in a single row */
+            gap: 15px; /* Space between buttons */
         }
 
         .iB {
@@ -48,46 +49,55 @@
             animation: flashEffect 0.2s ease-in-out;
           }
 
+        @keyframes flashEffect {
+            0% {
+              background-color: white;
+              color: black;
+            }
+            100% {
+              background-color: #2a74c1; /* Original background color */
+              color: white; /* Original text color */
+            }
+          }
+
           /* For screens smaller than 600px */
-          @media (max-width: 600px) {
-              #stats {
-                  flex-direction: column; /* Stack content vertically */
-                  align-items: center;
-                  padding: 10px 0; /* Add padding for spacing */
-              }
+        @media (max-width: 600px) {
+            #stats {
+                flex-direction: column; /* Stack the stats and icons */
+                align-items: center; /* Center-align everything */
+                padding: 15px 10px; /* Add padding for smaller screens */
+            }
 
-              #icons {
-                  display: flex;
-                  margin-top: 10px; /* Add spacing below the stats */
-                  flex-wrap: nowrap; /* Ensure buttons stay on one line */
-                  gap: 20px; /* Larger gap between buttons */
-              }
+            #icons {
+                margin-top: 10px; /* Add spacing between stats and icons */
+                gap: 20px; /* Larger spacing between buttons */
+            }
 
-              .iB {
-                  width: 40px; /* Larger buttons */
-                  height: 40px;
-                  font-size: 24px;
-                  line-height: 40px;
-              }
-          }
+            .iB {
+                width: 50px; /* Larger buttons */
+                height: 50px;
+                font-size: 28px;
+                line-height: 50px;
+            }
+        }
 
-          /* For screens smaller than 400px */
-          @media (max-width: 400px) {
-              #stats {
-                  padding: 15px 0; /* Adjust padding */
-              }
+        /* For screens smaller than 400px */
+        @media (max-width: 400px) {
+            #stats {
+                padding: 20px 5px; /* Adjust padding for very small screens */
+            }
 
-              #icons {
-                  gap: 15px; /* Slightly smaller gap between buttons */
-              }
+            #icons {
+                gap: 15px; /* Slightly smaller gap between buttons */
+            }
 
-              .iB {
-                  width: 50px; /* Even larger buttons */
-                  height: 50px;
-                  font-size: 28px;
-                  line-height: 50px;
-              }
-          }
+            .iB {
+                width: 60px; /* Even larger buttons */
+                height: 60px;
+                font-size: 30px;
+                line-height: 60px;
+            }
+        }
     </style>
 </head>
 <body>
