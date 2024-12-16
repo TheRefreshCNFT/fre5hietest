@@ -15,19 +15,32 @@
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            justify-content: center;
+
             align-items: center;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 5px 0;
+            padding: 10px 0;
             box-sizing: border-box;
             font-family: Arial, sans-serif;
             color: white;
-            gap: 5px;
+        }
+
+        #stats div.stats-row {
+            display: flex; /* Keep stats in a single row */
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap; /* Prevent stats from wrapping */
+            gap: 14px; /* Space between stats */
+            margin-bottom: 10px; /* Space between stats and buttons */
+        }
+
+        #stats div.stats-row div {
+            font-size: 15px;
+            white-space: nowrap; /* Prevent text from breaking into multiple lines */
         }
 
         #icons {
             display: flex;
-            gap: 15px;
+            justify-content: center;
+            gap: 15px; /* Space between buttons */
         }
 
         .iB {
@@ -40,7 +53,6 @@
             border-radius: 4px;
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5), -1px -1px 2px rgba(255, 255, 255, 0.5);
-            vertical-align: middle;
             display: inline-block;
             cursor: pointer;
         }
@@ -64,37 +76,33 @@
             }
           }
 
-        /* For screens smaller than 600px */
+          /* For screens smaller than 600px */
         @media (max-width: 600px) {
             #stats {
-                display: flex;
-                align-items: center;
-                padding: 10px 0; /* Add padding for spacing */
+                align-items: center; /* Center align the container */
+            }
+
+            #stats div.stats-row {
+                gap: 10px; /* Adjust spacing for smaller screens */
             }
 
             #icons {
-                display: flex;
-                margin-top: 10px; /* Add spacing below the stats */
-                flex-wrap: nowrap; /* Ensure buttons stay on one line */
-                gap: 20px; /* Larger gap between buttons */
+                margin-top: 10px; /* Add spacing between stats and buttons */
+                gap: 20px; /* Larger space between buttons */
             }
 
             .iB {
-                width: 50px; /* Larger buttons */
-                height: 50px;
-                font-size: 28px;
-                line-height: 50px;
+                width: 40px; /* Larger buttons */
+                height: 40px;
+                font-size: 24px;
+                line-height: 40px;
             }
         }
 
         /* For screens smaller than 400px */
         @media (max-width: 400px) {
-            #stats {
-                padding: 15px 0; /* Adjust padding */
-            }
-
-            #icons {
-                gap: 15px; /* Slightly smaller gap between buttons */
+            #stats div.stats-row {
+                gap: 8px; /* Reduce spacing for very small screens */
             }
 
             .iB {
@@ -104,8 +112,6 @@
                 line-height: 50px;
             }
         }
-
-
     </style>
 </head>
 <body>
