@@ -11,13 +11,14 @@
         #stats {
                     position: absolute;
                     top: 0;
-                    left: 50%;
+                    left: 45%;
                     transform: translateX(-50%);
                     display: flex;
-                    justify-content: center;
+                    justify-content: flex-start;
                     align-items: center;
                     background-color: rgba(0, 0, 0, 0.5);
-                    padding: 5px 10px;
+                    padding: 15px 0px;
+                    padding-right: 10px;
                     box-sizing: border-box;
                     font-family: Arial, sans-serif;
                     color: white;
@@ -37,8 +38,18 @@
                 }
 
                 #icons {
-                    display: flex; /* Keep icons in a horizontal row */
-                    gap: 15px; /* Add spacing between buttons */
+                  position: absolute;
+                  top: 0;
+                  left: 55%;
+                  transform: translateX(-50%);
+                  display: flex;
+                  justify-content: flex-end;
+                  align-items: center;
+                  padding: 5px 0;
+                  padding-left: 10px;
+                  box-sizing: border-box;
+                  flex-wrap: nowrap; /* Prevent stacking */
+                  gap: 15px;
                 }
 
                 .iB {
@@ -75,41 +86,63 @@
                     }
                 }
 
-                /* For screens smaller than 600px */
-                @media (max-width: 600px) {
+                /* For screens smaller than 800px */
+                @media (max-width: 1000px) {
                     #stats {
-                        flex-direction: column; /* Stack stats and icons vertically */
+                        left: 37%;
+                        padding: 20px 0; /* Adjust padding for smaller screens */
+                    }
+                    #stats div {
+                        font-size: 20px;
+                        margin: 0;
+                        white-space: nowrap; /* Ensure text stays in a single line */
+                        display: flex;
                         align-items: center;
-                        padding: 10px 5px; /* Adjust padding for smaller screens */
                     }
 
                     #icons {
-                        margin-top: 10px; /* Add spacing between stats and icons */
+                        left: 63%;
+                        padding: 5px 0;
                         gap: 20px; /* Larger spacing between buttons */
                     }
 
                     .iB {
-                        width: 50px; /* Larger buttons for small screens */
-                        height: 50px;
-                        font-size: 28px;
-                        line-height: 50px;
+                        width: 60px; /* Larger buttons for small screens */
+                        height: 60px;
+                        font-size: 35px;
+                        line-height: 60px;
                     }
+
+
+                /* For screens smaller than 600px */
+                @media (max-width: 600px) {
+                    #stats {
+                        left: 50%;
+                        align-items: center;
+                        padding: 5px 5px; /* Adjust padding for smaller screens */
+                    }
+
+                    #icons {
+                        left: 50%;
+                        padding: 35px 0;
+                    }
+
                 }
 
                 /* For screens smaller than 400px */
                 @media (max-width: 400px) {
                     #stats {
-                        padding: 15px 5px; /* Adjust padding for very small screens */
+                        padding: 5px 0; /* Adjust padding for very small screens */
                     }
 
                     #icons {
-                        gap: 15px; /* Slightly smaller gap between buttons */
+                        padding: 30px 0;
                     }
 
                     .iB {
                         width: 60px; /* Even larger buttons */
                         height: 60px;
-                        font-size: 30px;
+                        font-size: 40px;
                         line-height: 60px;
                     }
                 }
@@ -123,11 +156,11 @@
         <div id="timer">00:00</div>
         <div id="tries">Tries: 0</div>
         <div id="counter">Layrz: 15</div>
-        <div id="icons">
-            <span class="iB" id="f5_i">&#128260;</span>
-            <span class="iB" id="d_i">&#11015;&#65039;</span>
-            <span id="sS" class="iB">&#127942;</span>
-        </div>
+    </div>
+    <div id="icons">
+        <span class="iB" id="f5_i">&#128260;</span>
+        <span class="iB" id="d_i">&#11015;&#65039;</span>
+        <span class="iB" id="sS" >&#127942;</span>
     </div>
     <script>
     const c_Pl = ['Black', 'DodgerBlue'];
