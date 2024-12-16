@@ -8,39 +8,36 @@
         html, body { width: 100%; height: 100%; background-color: black; overflow: hidden; }
         canvas { display: block; }
 
-        /* Default styles for larger screens */
         #stats {
             position: absolute;
             top: 0;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-
+            justify-content: center;
             align-items: center;
-            padding: 10px 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 1px 0px;
             box-sizing: border-box;
             font-family: Arial, sans-serif;
             color: white;
         }
 
-        #stats div.stats-row {
-            display: flex; /* Keep stats in a single row */
-            justify-content: center;
+        #stats div {
+            font-size: 15px;
+            margin: 0;
+            white-space: nowrap;
+            display: flex;
             align-items: center;
-            flex-wrap: nowrap; /* Prevent stats from wrapping */
-            gap: 14px; /* Space between stats */
-            margin-bottom: 10px; /* Space between stats and buttons */
         }
 
-        #stats div.stats-row div {
-            font-size: 15px;
-            white-space: nowrap; /* Prevent text from breaking into multiple lines */
+        #stats div:not(:last-child) {
+            margin-right: 14px;
         }
 
         #icons {
             display: flex;
-            justify-content: center;
-            gap: 15px; /* Space between buttons */
+            gap: 15px;
         }
 
         .iB {
@@ -53,12 +50,9 @@
             border-radius: 4px;
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5), -1px -1px 2px rgba(255, 255, 255, 0.5);
+            vertical-align: middle;
             display: inline-block;
             cursor: pointer;
-        }
-
-        #cnvs {
-            padding: 10px 0;
         }
 
         .flash {
@@ -76,42 +70,45 @@
             }
           }
 
-          /* For screens smaller than 600px */
         @media (max-width: 600px) {
             #stats {
-                align-items: center; /* Center align the container */
+                padding: 1px 0px;
             }
 
-            #stats div.stats-row {
-                gap: 10px; /* Adjust spacing for smaller screens */
+            #stats div {
+                font-size: 15px;
+            }
+
+            .iB {
+              width: 30px;
+              height: 30px;
+              font-size: 22px;
+              line-height: 33px;
+        }
+      }
+
+        @media (max-width: 400px) {
+
+            #stats div {
+                font-size: 13px;
+            }
+
+            #stats div:not(:last-child) {
+            margin-right: 8px;
+            }
+
+            .iB {
+                width: 30px;
+                height: 30px;
+                font-size: 20px;
+                line-height: 32px;
             }
 
             #icons {
-                margin-top: 10px; /* Add spacing between stats and buttons */
-                gap: 20px; /* Larger space between buttons */
-            }
-
-            .iB {
-                width: 40px; /* Larger buttons */
-                height: 40px;
-                font-size: 24px;
-                line-height: 40px;
+                gap: 10px;
             }
         }
 
-        /* For screens smaller than 400px */
-        @media (max-width: 400px) {
-            #stats div.stats-row {
-                gap: 8px; /* Reduce spacing for very small screens */
-            }
-
-            .iB {
-                width: 50px; /* Even larger buttons */
-                height: 50px;
-                font-size: 28px;
-                line-height: 50px;
-            }
-        }
     </style>
 </head>
 <body>
