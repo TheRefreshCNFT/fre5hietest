@@ -67,7 +67,8 @@
         /* For screens smaller than 600px */
         @media (max-width: 600px) {
             #stats {
-                flex-direction: column; /* Stack content vertically */
+                display: flex;
+                flex-wrap: nowrap;
                 align-items: center;
                 padding: 10px 0; /* Add padding for spacing */
             }
@@ -80,10 +81,10 @@
             }
 
             .iB {
-                width: 40px; /* Larger buttons */
-                height: 40px;
-                font-size: 24px;
-                line-height: 40px;
+                width: 50px; /* Larger buttons */
+                height: 50px;
+                font-size: 28px;
+                line-height: 50px;
             }
         }
 
