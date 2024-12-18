@@ -5,163 +5,109 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         * { margin: 0; padding: 0; overflow: hidden;}
-        html, body { width: 100%; height: 100%; background-color: black;}
+        html, body { width: 100%; height: 100%; background-color: black; overflow: hidden; }
         canvas { display: block; }
 
         #stats {
-                    position: absolute;
-                    top: 0;
-                    left: 45%;
-                    transform: translateX(-50%);
-                    display: flex;
-                    justify-content: flex-start;
-                    align-items: center;
-                    background-color: rgba(0, 0, 0, 0.5);
-                    padding: 0px 0px;
-                    padding-right: 10px;
-                    box-sizing: border-box;
-                    font-family: Arial, sans-serif;
-                    color: white;
-                    flex-wrap: nowrap; /* Prevent stacking */
-                    line-height: 41px;
-                }
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 1px 0px;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
 
-                #stats div {
-                    font-size: 15px;
-                    margin: 0;
-                    white-space: nowrap; /* Ensure text stays in a single line */
-                    display: flex;
-                    align-items: center;
-                }
+        #stats div {
+            font-size: 15px;
+            margin: 0;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+        }
 
-                #stats div:not(:last-child) {
-                    margin-right: 12px;
-                }
+        #stats div:not(:last-child) {
+            margin-right: 14px;
+        }
 
-                #icons {
-                  position: absolute;
-                  top: 0;
-                  left: 55%;
-                  transform: translateX(-50%);
-                  display: flex;
-                  justify-content: flex-end;
-                  align-items: center;
-                  padding: 5px 0;
-                  padding-left: 10px;
-                  box-sizing: border-box;
-                  flex-wrap: nowrap; /* Prevent stacking */
-                  gap: 15px;
-                }
+        #icons {
+            display: flex;
+            gap: 15px;
+        }
 
-                .iB {
-                    width: 34px;
-                    height: 34px;
-                    font-size: 22px;
-                    text-align: center;
-                    line-height: 36px;
-                    background-color: #2a74c1;
-                    border-radius: 4px;
-                    font-weight: bold;
-                    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5), -1px -1px 2px rgba(255, 255, 255, 0.5);
-                    vertical-align: middle;
-                    display: inline-block;
-                    cursor: pointer;
-                }
+        .iB {
+            width: 34px;
+            height: 34px;
+            font-size: 22px;
+            text-align: center;
+            line-height: 36px;
+            background-color: #2a74c1;
+            border-radius: 4px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5), -1px -1px 2px rgba(255, 255, 255, 0.5);
+            vertical-align: middle;
+            display: inline-block;
+            cursor: pointer;
+        }
 
-                #cnvs {
-                    padding: 15px 0px;
-                }
+        .flash {
+            animation: flashEffect 0.2s ease-in-out;
+          }
 
-                .flash {
-                    animation: flashEffect 0.2s ease-in-out;
-                }
+        @keyframes flashEffect {
+            0% {
+              background-color: white;
+              color: black;
+            }
+            100% {
+              background-color: #2a74c1; /* Original background color */
+              color: white; /* Original text color */
+            }
+          }
 
-                @keyframes flashEffect {
-                    0% {
-                        background-color: white;
-                        color: black;
-                    }
-                    100% {
-                        background-color: #2a74c1; /* Original background color */
-                        color: white; /* Original text color */
-                    }
-                }
+        @media (max-width: 600px) {
+            #stats {
+                padding: 1px 0px;
+            }
 
-                /* For screens smaller than 800px */
-                @media (max-width: 1000px) {
-                    #stats {
-                        left: 35%;
-                        padding: 20px 0; /* Adjust padding for smaller screens */
-                    }
-                    #stats div {
-                        font-size: 15px;
-                        margin: 0;
-                        white-space: nowrap; /* Ensure text stays in a single line */
-                        display: flex;
-                        align-items: center;
-                    }
+            #stats div {
+                font-size: 15px;
+            }
 
-                    #icons {
-                        left: 65%;
-                        padding: 5px 0;
-                        gap: 20px; /* Larger spacing between buttons */
-                    }
+            .iB {
+              width: 30px;
+              height: 30px;
+              font-size: 22px;
+              line-height: 33px;
+        }
+      }
 
-                    .iB {
-                        width: 45px; /* Larger buttons for small screens */
-                        height: 45px;
-                        font-size: 27.5px;
-                        line-height: 45px;
-                    }
-                  }
+        @media (max-width: 400px) {
 
+            #stats div {
+                font-size: 13px;
+            }
 
-                /* For screens smaller than 600px */
-                @media (max-width: 600px) {
-                    #stats {
-                        left: 50%;
-                        align-items: center;
-                        padding: 5px 0; /* Adjust padding for smaller screens */
-                    }
+            #stats div:not(:last-child) {
+            margin-right: 8px;
+            }
 
-                    #icons {
-                        left: 50%;
-                        padding: 25px;
-                    }
+            .iB {
+                width: 30px;
+                height: 30px;
+                font-size: 20px;
+                line-height: 32px;
+            }
 
-                }
-
-                /* For screens smaller than 400px */
-                @media (max-width: 400px) {
-
-                    .iB {
-                        width: 50px;  //Even larger buttons
-                        height: 50px;
-                        font-size: 30px;
-                        line-height: 50px;
-                    }
-                }
-
-                /* For screens smaller than 200px */
-                @media (max-height: 300px) {
-                  #stats {
-                      padding: 0px 0; /* Adjust padding for smaller screens */
-                  }
-
-                  #icons {
-                        padding: 14px;
-                  }
-
-                    .iB {
-                        width: 24px; /* Even larger buttons */
-                        height: 24px;
-                        font-size: 12px;
-                        line-height: 24px;
-                    }
-                    #stats div {
-                        font-size: 10px;
-                }
-              }
+            #icons {
+                gap: 10px;
+            }
+        }
 
     </style>
 </head>
@@ -169,36 +115,44 @@
     <canvas id="cnvs"></canvas>
     <div id="stats">
         <div id="timer">00:00</div>
-        <div id="tries">Tries: 0</div>
-        <div id="counter">Layrz: 15</div>
-    </div>
-    <div id="icons">
-        <span class="iB" id="f5_i">&#128260;</span>
-        <span class="iB" id="d_i">&#11015;&#65039;</span>
-        <span class="iB" id="sS" >&#127942;</span>
+        <div id="clicks">Clicks: 0</div>
+        <div id="counter">Remaining: 15</div>
+        <div id="icons">
+            <span class="iB" id="f5_i">&#128260;</span>
+            <span class="iB" id="d_i">&#11015;&#65039;</span>
+            <span id="sS" class="iB">&#127942;</span>
+        </div>
     </div>
     <script>
-    const c_Pl = ['Black', 'DodgerBlue'];
-    function rPc() {
-        return c_Pl[Math.floor(Math.random() * c_Pl.length)];
-    }
-
-    function rF(min, max) {
-        return Math.random() * (max - min) + min;
-    }
-
-    function cGrd() {
-        const grd = ctx.createRadialGradient(cX, cY, 0, cX, cY, rDs);
-        // Use a for loop to add random stops
-        const sC = 9; // Number of random stops
-        for (let i = 0; i < sC; i++) {
-            grd.addColorStop(Math.random(), rPc());
+        const c_Pl = ['SlateBlue', 'Snow', 'Tomato', 'Orchid', 'Cyan'];
+        function rPc() {
+            return c_Pl[Math.floor(Math.random() * c_Pl.length)];
         }
 
-        // Add the final stop explicitly at 1
-        grd.addColorStop(1, 'DodgerBlue');
-        return grd;
-    }
+        function rF(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function cGrd() {
+          // Randomize the center point within the radial view
+          const i_X = cX + Math.cos(Math.random() * 2 * Math.PI) * (rDs * .75);
+          const i_Y = cY + Math.sin(Math.random() * 2 * Math.PI) * (rDs * .75);
+          const o_X = cX + Math.cos(Math.random() * 2 * Math.PI) * (rDs * 0);
+          const o_Y = cY + Math.sin(Math.random() * 2 * Math.PI) * (rDs * 0);
+
+          // Create a radial grd
+          const grd = ctx.createRadialGradient(i_X, i_Y, 0, cX, cY, rDs);
+
+          // Use a for loop to add random stops
+          const sC = 9; // Number of random stops
+          for (let i = 0; i < sC; i++) {
+              grd.addColorStop(Math.random(), rPc());
+          }
+
+          // Add the final stop explicitly at 1
+          grd.addColorStop(1, 'Red');
+          return grd;
+        }
 
         function rLc(canvas) {
           canvas.width = 1;
@@ -233,7 +187,7 @@
         const canvas = document.getElementById('cnvs');
         const ctx = canvas.getContext('2d');
         const t_D = document.getElementById('timer');
-        const c_D = document.getElementById('tries');
+        const c_D = document.getElementById('clicks');
         const cnt_D = document.getElementById('counter');
         const f5_i = document.getElementById('refresh');
         const d_i = document.getElementById('download');
@@ -245,13 +199,14 @@
         const cX = canvas.width / 2;
         const cY = canvas.height / 2;
         const rDs = Math.min(canvas.width, canvas.height) / 2 - 40;
-        const rC = 15;
+        const rC = 17;
 
         let rec = [];
         let lCr = null;
         let tI = null;
         let s_Tm = null;
         let clickCount = 0;
+
 
         function fE(element) {
         element.classList.add('flash');
@@ -380,7 +335,7 @@
             for (let i = 0; i < rC; i++) {
                 rec.push(cR());
             }
-            cnt_D.textContent = `Layrz: ${rec.length}`;
+            cnt_D.textContent = `Remaining: ${rec.length}`;
         }
 
         function rDc() {
@@ -468,7 +423,7 @@
 
             if (rec.length > 0) {
                 clickCount++;
-                c_D.textContent = `Tries: ${clickCount}`;
+                c_D.textContent = `Clicks: ${clickCount}`;
             }
 
             if (lCr && ctx.isPointInPath(lCr, x, y)) {
@@ -476,7 +431,7 @@
 
                 // Remove the clicked rectangle
                 const rect = rec.pop();
-                cnt_D.textContent = `Layrz: ${rec.length}`;
+                cnt_D.textContent = `Remaining: ${rec.length}`;
 
                 if (rec.length === 0) {
                     // Game is over, skip animation and display winner message
@@ -547,9 +502,8 @@
                 link.download = 'art-4k.png';
                 link.href = img; // Use the pre-captured image URL
                 link.click();
-            }, 100); // Match the flash animation duration
+            }, 300); // Match the flash animation duration
         });
-
 
 
         ss_i.addEventListener('click', () => {
@@ -571,7 +525,7 @@
             oScX.font = '16px Arial';
             oScX.fillText(`Date: ${date}`, 10, 40);
             oScX.fillText(`Time: ${time}`, 10, 70);
-            oScX.fillText(`Starting Layrz: ${rC}`, 10, 110);
+            oScX.fillText(`Starting Rectangles: ${rC}`, 10, 110);
             oScX.fillText(t_D.textContent, 10, 150);
             oScX.fillText(c_D.textContent, 10, 190);
             oScX.fillText(cnt_D.textContent, 10, 230);
