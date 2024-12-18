@@ -215,6 +215,12 @@
         let zzfxV=.3; // Volume
         let zzfxR=44100; // Sample rate
         let zzfxX=new(window.AudioContext||webkitAudioContext)
+        // Ensure the AudioContext is resumed on user interaction
+        function rAc() {
+            if (zzfxX.state === 'suspended') {
+                zzfxX.resume().catch(err => console.error('AudioContext resume failed:', err));
+            }
+        }
 
         const canvas = document.getElementById('cnvs');
         const ctx = canvas.getContext('2d');
@@ -458,6 +464,7 @@
             }
 
             if (lCr && ctx.isPointInPath(lCr, x, y)) {
+              rAc()
                 zzfx(...c_S);
 
                 // Remove the clicked rectangle
@@ -472,8 +479,18 @@
                     //ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear everything
                     // Play the winner tune
                     for (let i = 0; i < 5; i++) {
-                        setTimeout(() => zzfx(...c_S), i * 100); // 300ms delay between each execution
-                    }
+                    setTimeout(() => {
+                        // Resume the AudioContext before playing sound
+                        if (zzfxX.state === 'suspended') {
+                            zzfxX.resume().then(() => {
+                                zzfx(...c_S); // Play the sound after resuming the AudioContext
+                            });
+                        } else {
+                            zzfx(...c_S); // Play the sound directly if AudioContext is already running
+                        }
+                    }, i * 100); // 100ms delay between each execution
+                }
+
 
                     dWm(); // Show the winner message
                 } else {
@@ -484,17 +501,10 @@
                     });
                 }
             } else if (rec.length > 0) {
+              rAc()
                 zzfx(...inc_S);
             }
         });
-
-
-
-
-
-
-
-
 
 
         document.getElementById('f5_i').addEventListener('click', () => {
