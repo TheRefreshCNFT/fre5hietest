@@ -5,109 +5,161 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         * { margin: 0; padding: 0; overflow: hidden;}
-        html, body { width: 100%; height: 100%; background-color: black; overflow: hidden; }
+        html, body { width: 100%; height: 100%; background-color: black;}
         canvas { display: block; }
 
         #stats {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 1px 0px;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-            color: white;
-        }
+                    position: absolute;
+                    top: 0;
+                    left: 45%;
+                    transform: translateX(-50%);
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    padding: 0px 0px;
+                    padding-right: 10px;
+                    box-sizing: border-box;
+                    font-family: Arial, sans-serif;
+                    color: white;
+                    flex-wrap: nowrap; /* Prevent stacking */
+                }
 
-        #stats div {
-            font-size: 15px;
-            margin: 0;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-        }
+                #stats div {
+                    line-height: 45px;
+                    font-size: 15px;
+                    margin: 0;
+                    white-space: nowrap; /* Ensure text stays in a single line */
+                    display: flex;
+                    align-items: center;
+                }
 
-        #stats div:not(:last-child) {
-            margin-right: 14px;
-        }
+                #stats div:not(:last-child) {
+                    margin-right: 12px;
+                }
 
-        #icons {
-            display: flex;
-            gap: 15px;
-        }
+                #icons {
+                  position: absolute;
+                  top: 0;
+                  left: 55%;
+                  transform: translateX(-50%);
+                  display: flex;
+                  justify-content: flex-end;
+                  align-items: center;
+                  padding: 5px 0;
+                  padding-left: 10px;
+                  box-sizing: border-box;
+                  flex-wrap: nowrap; /* Prevent stacking */
+                  gap: 15px;
+                }
 
-        .iB {
-            width: 34px;
-            height: 34px;
-            font-size: 22px;
-            text-align: center;
-            line-height: 36px;
-            background-color: #2a74c1;
-            border-radius: 4px;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5), -1px -1px 2px rgba(255, 255, 255, 0.5);
-            vertical-align: middle;
-            display: inline-block;
-            cursor: pointer;
-        }
+                .iB {
+                    width: 34px;
+                    height: 34px;
+                    font-size: 22px;
+                    text-align: center;
+                    line-height: 36px;
+                    background-color: #2a74c1;
+                    border-radius: 4px;
+                    vertical-align: middle;
+                    display: inline-block;
+                    cursor: pointer;
+                }
 
-        .flash {
-            animation: flashEffect 0.2s ease-in-out;
-          }
+                #cnvs {
+                    padding: 15px 0;
+                }
 
-        @keyframes flashEffect {
-            0% {
-              background-color: white;
-              color: black;
-            }
-            100% {
-              background-color: #2a74c1; /* Original background color */
-              color: white; /* Original text color */
-            }
-          }
+                .flash {
+                    animation: flashEffect 0.2s ease-in-out;
+                }
 
-        @media (max-width: 600px) {
-            #stats {
-                padding: 1px 0px;
-            }
+                @keyframes flashEffect {
+                    0% {
+                        background-color: white;
+                        color: black;
+                    }
+                    100% {
+                        background-color: #2a74c1; /* Original background color */
+                        color: white; /* Original text color */
+                    }
+                }
 
-            #stats div {
-                font-size: 15px;
-            }
+                /* For screens smaller than 1300px */
+                @media (max-width: 1290px) {
+                    #stats {
+                        left: 39%;
+                        padding: 10px 0; /* Adjust padding for smaller screens */
+                    }
+                    #stats div {
+                        font-size: 30px;
+                    }
 
-            .iB {
-              width: 30px;
-              height: 30px;
-              font-size: 22px;
-              line-height: 33px;
-        }
-      }
+                    #icons {
+                        left: 61%;
+                        gap: 20px;
+                    }
 
-        @media (max-width: 400px) {
+                    .iB {
+                        width: 50px;
+                        height: 50px;
+                        font-size: 35px;
+                        line-height: 50px;
+                    }
 
-            #stats div {
-                font-size: 13px;
-            }
+                    #cnvs {
+                    padding: 30px 0;
+                    }
+                  }
 
-            #stats div:not(:last-child) {
-            margin-right: 8px;
-            }
+                /* For screens smaller than 1000px */
+                @media (max-width: 1024px) {
+                    #stats {
+                        left: 34%;
+                        padding: 5px 0; /* Adjust padding for smaller screens */
+                    }
+                    #stats div {
+                        line-height: 60px;
+                    }
 
-            .iB {
-                width: 30px;
-                height: 30px;
-                font-size: 20px;
-                line-height: 32px;
-            }
+                    .iB {
+                        width: 63px;
+                        height: 63px;
+                        font-size: 46px;
+                        line-height: 63px;
+                    }
 
-            #icons {
-                gap: 10px;
-            }
-        }
+                    #icons {
+                        left: 66%;
+                    }
+                    #cnvs {
+                      padding: 32px 0;
+                    }
+                }
+
+                /* For screens smaller than 915px */
+                @media (max-width: 915px) {
+                    #stats {
+                        left: 50%;
+                    }
+
+                    #icons {
+                        left: 50%;
+                        padding: 55px;
+                    }
+
+                }
+
+                /* For screens smaller than 540px */
+                @media (max-width: 545px) {
+                  #stats div {
+                      font-size: 25px;
+                  }
+
+                    .iB {
+                        font-size: 45px;
+                        line-height: 65px;
+                    }
+                }
 
     </style>
 </head>
@@ -115,44 +167,36 @@
     <canvas id="cnvs"></canvas>
     <div id="stats">
         <div id="timer">00:00</div>
-        <div id="clicks">Clicks: 0</div>
-        <div id="counter">Remaining: 15</div>
-        <div id="icons">
-            <span class="iB" id="f5_i">&#128260;</span>
-            <span class="iB" id="d_i">&#11015;&#65039;</span>
-            <span id="sS" class="iB">&#127942;</span>
-        </div>
+        <div id="tries">Tries: 0</div>
+        <div id="counter">Layrz: 15</div>
+    </div>
+    <div id="icons">
+        <span class="iB" id="f5_i">&#128260;</span>
+        <span class="iB" id="d_i">&#11015;&#65039;</span>
+        <span class="iB" id="sS" >&#127942;</span>
     </div>
     <script>
-        const c_Pl = ['SlateBlue', 'Snow', 'Tomato', 'Orchid', 'Cyan'];
-        function rPc() {
-            return c_Pl[Math.floor(Math.random() * c_Pl.length)];
+    const c_Pl = ['Black', 'DodgerBlue'];
+    function rPc() {
+        return c_Pl[Math.floor(Math.random() * c_Pl.length)];
+    }
+
+    function rF(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    function cGrd() {
+        const grd = ctx.createRadialGradient(cX, cY, 0, cX, cY, rDs);
+        // Use a for loop to add random stops
+        const sC = 9; // Number of random stops
+        for (let i = 0; i < sC; i++) {
+            grd.addColorStop(Math.random(), rPc());
         }
 
-        function rF(min, max) {
-            return Math.random() * (max - min) + min;
-        }
-
-        function cGrd() {
-          // Randomize the center point within the radial view
-          const i_X = cX + Math.cos(Math.random() * 2 * Math.PI) * (rDs * .75);
-          const i_Y = cY + Math.sin(Math.random() * 2 * Math.PI) * (rDs * .75);
-          const o_X = cX + Math.cos(Math.random() * 2 * Math.PI) * (rDs * 0);
-          const o_Y = cY + Math.sin(Math.random() * 2 * Math.PI) * (rDs * 0);
-
-          // Create a radial grd
-          const grd = ctx.createRadialGradient(i_X, i_Y, 0, cX, cY, rDs);
-
-          // Use a for loop to add random stops
-          const sC = 9; // Number of random stops
-          for (let i = 0; i < sC; i++) {
-              grd.addColorStop(Math.random(), rPc());
-          }
-
-          // Add the final stop explicitly at 1
-          grd.addColorStop(1, 'Red');
-          return grd;
-        }
+        // Add the final stop explicitly at 1
+        grd.addColorStop(1, 'DodgerBlue');
+        return grd;
+    }
 
         function rLc(canvas) {
           canvas.width = 1;
@@ -164,30 +208,18 @@
           canvas.remove();
         }
 
-        let alpha;
-        let gl;
         let buffer;
-          let zzfx=(...t)=>zzfxP(zzfxG(...t))
-          let zzfxP=(...t)=>{let e=zzfxX.createBufferSource(),f=zzfxX.createBuffer(t.length,t[0].length,zzfxR);t.map((d,i)=>f.getChannelData(i).set(d)),e.buffer=f,e.connect(zzfxX.destination),e.start();return e}
-          let zzfxG=(q=1,k=.05,c=220,e=0,t=0,u=.1,r=0,F=1,v=0,z=0,w=0,A=0,l=0,B=0,x=0,G=0,d=0,y=1,m=0,C=0)=>{let b=2*Math.PI,H=v*=500*b/zzfxR**2,I=(0<x?1:-1)*b/4,D=c*=(1+2*k*Math.random()-k)*b/zzfxR,Z=[],g=0,E=0,a=0,n=1,J=0,K=0,f=0,p,h;e=99+zzfxR*e;m*=zzfxR;t*=zzfxR;u*=zzfxR;d*=zzfxR;z*=500*b/zzfxR**3;x*=b/zzfxR;w*=b/zzfxR;A*=zzfxR;l=zzfxR*l|0;for(h=e+m+t+u+d|0;a<h;Z[a++]=f)++K%(100*G|0)||(f=r?1<r?2<r?3<r?Math.sin((g%b)**3):Math.max(Math.min(Math.tan(g),1),-1):1-(2*g/b%2+2)%2:1-4*Math.abs(Math.round(g/b)-g/b):Math.sin(g),f=(l?1-C+C*Math.sin(2*Math.PI*a/l):1)*(0<f?1:-1)*Math.abs(f)**F*q*zzfxV*(a<e?a/e:a<e+m?1-(a-e)/m*(1-y):a<e+m+t?y:a<h-d?(h-a-d)/u*y:0),f=d?f/2+(d>a?0:(a<h-d?1:(h-a)/d)*Z[a-d|0]/2):f),p=(c+=v+=z)*Math.sin(E*x-I),g+=p-p*B*(1-1E9*(Math.sin(a)+1)%2),E+=p-p*B*(1-1E9*(Math.sin(a)**2+1)%2),n&&++n>A&&(c+=w,D+=w,n=0),!l||++J%l||(c=D,v=H,n=n||1);return Z}
-          let zzfxV=.3;
-          let zzfxR=44100;
-          let zzfxX=new(window.AudioContext||webkitAudioContext);
-          let zzfxM=(n,f,t,e=125)=>{let l,o,z,r,g,h,x,a,u,c,d,i,m,p,G,M=0,R=[],b=[],j=[],k=0,q=0,s=1,v={},w=zzfxR/e*60>>2;for(;s;k++)R=[s=a=d=m=0],t.map((e,d)=>{for(x=f[e][k]||[0,0,0],s|=!!f[e][k],G=m+(f[e][0].length-2-!a)*w,p=d==t.length-1,o=2,r=m;o<x.length+p;a=++o){for(g=x[o],u=o==x.length+p-1&&p||c!=(x[0]||0)|g|0,z=0;z<w&&a;z++>w-99&&u?i+=(i<1)/99:0)h=(1-i)*R[M++]/2||0,b[r]=(b[r]||0)-h*q+h,j[r]=(j[r++]||0)+h*q+h;g&&(i=g%1,q=x[1]||0,(g|=0)&&(R=v[[c=x[M=0]||0,g]]=v[[c,g]]||(l=[...n[c]],l[2]*=2**((g-12)/12),g>0?zzfxG(...l):[])))}m=G});return[b,j]};
-
-          function pWt() {
-              zzfx(...[.1,,128,.08,.22,.2,,.71,,-1.5,-924,.05,.12,.09,.33,.12,.09]);
-              setTimeout(() => zzfx(...[.1,,150,.08,.22,.2,,.71,,-1.5,-850,.05,.12,.09,.33,.12,.09]), 200);
-              setTimeout(() => zzfx(...[.1,,110,.08,.22,.2,,.71,,-1.5,-1000,.05,.12,.09,.33,.12,.09]), 400);
-              setTimeout(() => zzfx(...[.1,,128,.08,.22,.2,,.71,,-1.5,-924,.05,.12,.09,.33,.12,.09]), 600);
-              setTimeout(() => zzfx(...[.1,,140,.08,.22,.2,,.71,,-1.5,-890,.05,.12,.09,.33,.12,.09]), 800);
-          }
-
+        let zzfx=(...t)=>zzfxP(zzfxG(...t));
+        let zzfxP=(...t)=>{let e=zzfxX.createBufferSource(),f=zzfxX.createBuffer(t.length,t[0].length,zzfxR);t.map((d,i)=>f.getChannelData(i).set(d)),e.buffer=f,e.connect(zzfxX.destination),e.start();return e};
+        let zzfxG=(q=1,k=.05,c=220,e=0,t=0,u=.1,r=0,F=1,v=0,z=0,w=0,A=0,l=0,B=0,x=0,G=0,d=0,y=1,m=0,C=0)=>{let b=2*Math.PI,H=v*=500*b/zzfxR**2,I=(0<x?1:-1)*b/4,D=c*=(1+2*k*Math.random()-k)*b/zzfxR,Z=[],g=0,E=0,a=0,n=1,J=0,K=0,f=0,p,h;e=99+zzfxR*e;m*=zzfxR;t*=zzfxR;u*=zzfxR;d*=zzfxR;z*=500*b/zzfxR**3;x*=b/zzfxR;w*=b/zzfxR;A*=zzfxR;l=zzfxR*l|0;for(h=e+m+t+u+d|0;a<h;Z[a++]=f)++K%(100*G|0)||(f=r?1<r?2<r?3<r?Math.sin((g%b)**3):Math.max(Math.min(Math.tan(g),1),-1):1-(2*g/b%2+2)%2:1-4*Math.abs(Math.round(g/b)-g/b):Math.sin(g),f=(l?1-C+C*Math.sin(2*Math.PI*a/l):1)*(0<f?1:-1)*Math.abs(f)**F*q*zzfxV*(a<e?a/e:a<e+m?1-(a-e)/m*(1-y):a<e+m+t?y:a<h-d?(h-a-d)/u*y:0),f=d?f/2+(d>a?0:(a<h-d?1:(h-a)/d)*Z[a-d|0]/2):f),p=(c+=v+=z)*Math.sin(E*x-I),g+=p-p*B*(1-1E9*(Math.sin(a)+1)%2),E+=p-p*B*(1-1E9*(Math.sin(a)**2+1)%2),n&&++n>A&&(c+=w,D+=w,n=0),!l||++J%l||(c=D,v=H,n=n||1);return Z};
+        let zzfxV=.3; // Volume
+        let zzfxR=44100; // Sample rate
+        let zzfxX=new(window.AudioContext||webkitAudioContext)
 
         const canvas = document.getElementById('cnvs');
         const ctx = canvas.getContext('2d');
         const t_D = document.getElementById('timer');
-        const c_D = document.getElementById('clicks');
+        const c_D = document.getElementById('tries');
         const cnt_D = document.getElementById('counter');
         const f5_i = document.getElementById('refresh');
         const d_i = document.getElementById('download');
@@ -199,14 +231,13 @@
         const cX = canvas.width / 2;
         const cY = canvas.height / 2;
         const rDs = Math.min(canvas.width, canvas.height) / 2 - 40;
-        const rC = 17;
+        const rC = 15;
 
         let rec = [];
         let lCr = null;
         let tI = null;
         let s_Tm = null;
-        let clickCount = 0;
-
+        let cCt = 0;
 
         function fE(element) {
         element.classList.add('flash');
@@ -216,81 +247,81 @@
         }
 
         function bR(rect) {
-            const pieces = [];
-            const pieceCount = Math.floor((rect.width * rect.height) / 100);
+            const pCs = [];
+            const pCt = Math.floor((rect.width * rect.height) / 100);
 
                     // Detect device type
-            const isAndroid = /Android/i.test(navigator.userAgent);
-            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            const iAnd = /Android/i.test(navigator.userAgent);
+            const iIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
             // Adjust speeds for devices
-            let dxRange, dyRange;
-            if (isAndroid) {
-                dxRange = [-3, 3];
-                dyRange = [-3, 3];
+            let dXr, dYr;
+            if (iAnd) {
+                dXr = [-3, 3];
+                dYr = [-3, 3];
                 wid = [5, 20];
                 hei = [5, 10];
-            } else if (isIOS) {
-                dxRange = [-4, 4];
-                dyRange = [-4, 4];
+            } else if (iIOS) {
+                dXr = [-4, 4];
+                dYr = [-4, 4];
                 wid = [5, 30];
                 hei = [5, 10];
             } else {
-                dxRange = [-3, 3];
-                dyRange = [-3, 3];
+                dXr = [-3, 3];
+                dYr = [-3, 3];
                 wid = [20, 70];
                 hei = [5, 10];
             }
 
-            for (let i = 0; i < pieceCount; i++) {
-                const piece = {
+            for (let i = 0; i < pCt; i++) {
+                const pCe = {
                     x: rect.x + rF(0, rect.width),
                     y: rect.y + rF(0, rect.height),
-                    dx: rF(...dxRange), // Random x movement in all directions
-                    dy: rF(...dyRange), // Random y movement in all directions
+                    dx: rF(...dXr), // Random x movement in all directions
+                    dy: rF(...dYr), // Random y movement in all directions
                     width: rF(...wid),
                     height: rF(...hei),
                     color: rPc(),
                     opacity: 1.0, // Initial opacity (fully visible)
                 };
-                pieces.push(piece);
+                pCs.push(pCe);
             }
 
-            return pieces;
+            return pCs;
         }
 
 
-        function aP(pieces, callback) {
+        function aP(pCs, callback) {
             function step() {
                 //ctx.clearRect(0, 0, canvas.width, canvas.height);
                 rDc();
 
-                pieces.forEach((piece) => {
-                  const isAndroid = /Android/i.test(navigator.userAgent);
-                  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+                pCs.forEach((pCe) => {
+                  const iAnd = /Android/i.test(navigator.userAgent);
+                  const iIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-                  if (isAndroid) {
+                  if (iAnd) {
                       var po = 0.075;
-                  } else if (isIOS) {
+                  } else if (iIOS) {
                       var po = 0.2;
                   } else {
                       var po = 0.11;
                   }
 
-                    piece.x += piece.dx;
-                    piece.y += piece.dy;
-                    piece.opacity -= po; // Gradually reduce opacity
+                    pCe.x += pCe.dx;
+                    pCe.y += pCe.dy;
+                    pCe.opacity -= po; // Gradually reduce opacity
 
-                    if (piece.opacity > 0) {
-                        ctx.globalAlpha = piece.opacity; // Apply opacity
-                        ctx.fillStyle = piece.color;
-                        ctx.fillRect(piece.x, piece.y, piece.width, piece.height);
+                    if (pCe.opacity > 0) {
+                        ctx.globalAlpha = pCe.opacity; // Apply opacity
+                        ctx.fillStyle = pCe.color;
+                        ctx.fillRect(pCe.x, pCe.y, pCe.width, pCe.height);
                         ctx.globalAlpha = 1.0; // Reset opacity
                     }
                 });
 
-                // Continue animation while pieces are visible
-                if (pieces.some(piece => piece.opacity > 0)) {
+                // Continue animation while pCs are visible
+                if (pCs.some(pCe => pCe.opacity > 0)) {
                     requestAnimationFrame(step);
                 } else if (callback) {
                     callback(); // Trigger callback after animation finishes
@@ -303,18 +334,18 @@
 
 
         function cR() {
-            const angle = Math.random() * 2 * Math.PI;
-            const distance = Math.random() * (rDs * 0.85);
+            const aL = Math.random() * 2 * Math.PI;
+            const dT = Math.random() * (rDs * 0.85);
             const width = Math.random() * (canvas.width * 0.4) + (canvas.width * 0.05);
             const height = Math.random() * (canvas.height * 0.4) + (canvas.height * 0.05);
 
 
             const x = Math.max(
-                Math.min(cX + Math.cos(angle) * distance - width / 2, canvas.width - width),
+                Math.min(cX + Math.cos(aL) * dT - width / 2, canvas.width - width),
                 0
             );
             const y = Math.max(
-                Math.min(cY + Math.sin(angle) * distance - height / 2, canvas.height - height),
+                Math.min(cY + Math.sin(aL) * dT - height / 2, canvas.height - height),
                 0
             );
 
@@ -335,7 +366,7 @@
             for (let i = 0; i < rC; i++) {
                 rec.push(cR());
             }
-            cnt_D.textContent = `Remaining: ${rec.length}`;
+            cnt_D.textContent = `Layrz: ${rec.length}`;
         }
 
         function rDc() {
@@ -392,10 +423,10 @@
             if (tI) return;
             s_Tm = Date.now();
             tI = setInterval(() => {
-                const elapsedTime = Math.floor((Date.now() - s_Tm) / 1000);
-                const minutes = String(Math.floor(elapsedTime / 60)).padStart(2, '0');
-                const seconds = String(elapsedTime % 60).padStart(2, '0');
-                t_D.textContent = `${minutes}:${seconds}`;
+                const eT = Math.floor((Date.now() - s_Tm) / 1000);
+                const mNs = String(Math.floor(eT / 60)).padStart(2, '0');
+                const sCs = String(eT % 60).padStart(2, '0');
+                t_D.textContent = `${mNs}:${sCs}`;
             }, 1000);
         }
 
@@ -422,8 +453,8 @@
             if (!s_Tm) sTr();
 
             if (rec.length > 0) {
-                clickCount++;
-                c_D.textContent = `Clicks: ${clickCount}`;
+                cCt++;
+                c_D.textContent = `Tries: ${cCt}`;
             }
 
             if (lCr && ctx.isPointInPath(lCr, x, y)) {
@@ -431,7 +462,7 @@
 
                 // Remove the clicked rectangle
                 const rect = rec.pop();
-                cnt_D.textContent = `Remaining: ${rec.length}`;
+                cnt_D.textContent = `Layrz: ${rec.length}`;
 
                 if (rec.length === 0) {
                     // Game is over, skip animation and display winner message
@@ -439,13 +470,16 @@
                     iGa = false;
 
                     //ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear everything
+                    // Play the winner tune
+                    for (let i = 0; i < 5; i++) {
+                        setTimeout(() => zzfx(...c_S), i * 100); // 300ms delay between each execution
+                    }
 
-                    pWt(); // Play the winner tune
                     dWm(); // Show the winner message
                 } else {
                     // Animate the breaking of the clicked rectangle
-                    const pieces = bR(rect);
-                    aP(pieces, () => {
+                    const pCs = bR(rect);
+                    aP(pCs, () => {
                         rDc(); // Redraw the remaining rec after animation
                     });
                 }
@@ -502,8 +536,9 @@
                 link.download = 'art-4k.png';
                 link.href = img; // Use the pre-captured image URL
                 link.click();
-            }, 300); // Match the flash animation duration
+            }, 100); // Match the flash animation duration
         });
+
 
 
         ss_i.addEventListener('click', () => {
@@ -514,18 +549,18 @@
             oSc.width = 300;
             oSc.height = 250;
 
-            const now = new Date();
-            const date = now.toLocaleDateString();
-            const time = now.toLocaleTimeString();
+            const nw = new Date();
+            const dt = nw.toLocaleDateString();
+            const tm = nw.toLocaleTimeString();
 
             oScX.fillStyle = 'black';
             oScX.fillRect(0, 0, oSc.width, oSc.height);
 
             oScX.fillStyle = 'white';
             oScX.font = '16px Arial';
-            oScX.fillText(`Date: ${date}`, 10, 40);
-            oScX.fillText(`Time: ${time}`, 10, 70);
-            oScX.fillText(`Starting Rectangles: ${rC}`, 10, 110);
+            oScX.fillText(`Date: ${dt}`, 10, 40);
+            oScX.fillText(`Time: ${tm}`, 10, 70);
+            oScX.fillText(`Starting Layrz: ${rC}`, 10, 110);
             oScX.fillText(t_D.textContent, 10, 150);
             oScX.fillText(c_D.textContent, 10, 190);
             oScX.fillText(cnt_D.textContent, 10, 230);
@@ -540,11 +575,11 @@
         rDc();
 
 
-                window.addEventListener('pagehide', (event) => {
-                var canvases = document.getElementsByTagName("canvas");
-                var canvasesList = Array.prototype.slice.call(canvases);
-                canvasesList.forEach(rLc);
-                });
+        window.addEventListener('pagehide', (event) => {
+        var css = document.getElementsByTagName("canvas");
+        var cL = Array.prototype.slice.call(css);
+        cL.forEach(rLc);
+        });
     </script>
 </body>
 </html>
