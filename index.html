@@ -1,319 +1,595 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { margin: 0; overflow: hidden; background-color: black; }
-    canvas { display: block; touch-action: none; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; overflow: hidden;}
+        html, body { width: 100%; height: 100%; background-color: black;}
+        canvas { display: block; }
+
+        #stats {
+                    position: absolute;
+                    top: 0;
+                    left: 45%;
+                    transform: translateX(-50%);
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    padding: 0px 0px;
+                    padding-right: 10px;
+                    box-sizing: border-box;
+                    font-family: Arial, sans-serif;
+                    color: white;
+                    flex-wrap: nowrap; /* Prevent stacking */
+                }
+
+                #stats div {
+                    line-height: 45px;
+                    font-size: 15px;
+                    margin: 0;
+                    white-space: nowrap; /* Ensure text stays in a single line */
+                    display: flex;
+                    align-items: center;
+                }
+
+                #stats div:not(:last-child) {
+                    margin-right: 12px;
+                }
+
+                #icons {
+                  position: absolute;
+                  top: 0;
+                  left: 55%;
+                  transform: translateX(-50%);
+                  display: flex;
+                  justify-content: flex-end;
+                  align-items: center;
+                  padding: 5px 0;
+                  padding-left: 10px;
+                  box-sizing: border-box;
+                  flex-wrap: nowrap; /* Prevent stacking */
+                  gap: 15px;
+                }
+
+                .iB {
+                    width: 34px;
+                    height: 34px;
+                    font-size: 22px;
+                    text-align: center;
+                    line-height: 36px;
+                    background-color: #2a74c1;
+                    border-radius: 4px;
+                    vertical-align: middle;
+                    display: inline-block;
+                    cursor: pointer;
+                }
+
+                #cnvs {
+                    padding: 15px 0;
+                }
+
+                .flash {
+                    animation: flashEffect 0.2s ease-in-out;
+                }
+
+                @keyframes flashEffect {
+                    0% {
+                        background-color: white;
+                        color: black;
+                    }
+                    100% {
+                        background-color: #2a74c1; /* Original background color */
+                        color: white; /* Original text color */
+                    }
+                }
+
+                /* For screens smaller than 1300px */
+                @media (max-width: 1290px) {
+                    #stats {
+                        left: 39%;
+                        padding: 10px 0; /* Adjust padding for smaller screens */
+                    }
+                    #stats div {
+                        font-size: 30px;
+                    }
+
+                    #icons {
+                        left: 61%;
+                        gap: 20px;
+                    }
+
+                    .iB {
+                        width: 50px;
+                        height: 50px;
+                        font-size: 35px;
+                        line-height: 50px;
+                    }
+
+                    #cnvs {
+                    padding: 30px 0;
+                    }
+                  }
+
+                /* For screens smaller than 1000px */
+                @media (max-width: 1024px) {
+                    #stats {
+                        left: 34%;
+                        padding: 5px 0; /* Adjust padding for smaller screens */
+                    }
+                    #stats div {
+                        line-height: 60px;
+                    }
+
+                    .iB {
+                        width: 63px;
+                        height: 63px;
+                        font-size: 46px;
+                        line-height: 63px;
+                    }
+
+                    #icons {
+                        left: 66%;
+                    }
+                    #cnvs {
+                      padding: 32px 0;
+                    }
+                }
+
+                /* For screens smaller than 915px */
+                @media (max-width: 915px) {
+                    #stats {
+                        left: 50%;
+                    }
+
+                    #icons {
+                        left: 50%;
+                        padding: 55px;
+                    }
+
+                }
+
+                /* For screens smaller than 540px */
+                @media (max-width: 545px) {
+                  #stats div {
+                      font-size: 25px;
+                  }
+
+                    .iB {
+                        font-size: 45px;
+                        line-height: 65px;
+                    }
+                }
+
+    </style>
+
+    </style>
 </head>
 <body>
-<canvas id="patternCanvas"></canvas>
-<script>
-  const canvas = document.getElementById("patternCanvas");
-  const ctx = canvas.getContext("2d");
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-
-  // Global variables
-  const textColors = ["#f48e00", "#29eb3c", "#f7ea36", "#4bd9f2", "#f70057"]; // Array of colors for the text gradient
-  let currentTextColorIndex = 0; // Track the current color for the text
-  let blinkTimer = 0; // Counter to control the blinking effect
-  const numShapes = 19; // Number of mandala shapes
-  const maxDriftWidth = 50; // Maximum horizontal drift width
-  const shapes = []; // Array to store shape objects
-  let time = 0;
-  let letterColorIndices = {};
-  // Initialize shapes with properties
-  function initializeShapes() {
-    shapes.length = 0;
-    const maxRadius = Math.min(canvas.width, canvas.height) / 3;
-    const minDistance = 100; // Minimum distance between flakes
-
-    for (let i = 0; i < numShapes; i++) {
-      let radius, x, y, validPosition;
-      let attempts = 0;
-
-      do {
-        validPosition = true; // Assume the position is valid initially
-        radius = Math.random() * maxRadius * 0.4 + maxRadius * 0.075;
-        x = Math.random() * canvas.width;
-        y = Math.random() * canvas.height;
-
-        // Check against all previously placed shapes
-        for (const existingShape of shapes) {
-          const distance = Math.hypot(x - existingShape.x, y - existingShape.y);
-          if (distance < minDistance) {
-            validPosition = false; // Too close to an existing shape
-            break;
-          }
+    <canvas id="cnvs"></canvas>
+    <div id="stats">
+        <div id="timer">00:00</div>
+        <div id="tries">Tries: 0</div>
+        <div id="counter">Layrz: 15</div>
+    </div>
+    <div id="icons">
+        <span class="iB" id="f5_i">&#128260;</span>
+        <span class="iB" id="d_i">&#11015;&#65039;</span>
+        <span class="iB" id="sS" >&#127942;</span>
+    </div>
+    <script>
+        const c_Pl = ['SlateBlue', 'Snow', 'Tomato', 'Orchid', 'Cyan'];
+        function rPc() {
+            return c_Pl[Math.floor(Math.random() * c_Pl.length)];
         }
 
-        attempts++;
-        if (attempts > 100) break; // Avoid infinite loops in dense configurations
+        function rF(min, max) {
+            return Math.random() * (max - min) + min;
+        }
 
-      } while (!validPosition);
+        function cGrd() {
+          // Randomize the center point within the radial view
+          const i_X = cX + Math.cos(Math.random() * 2 * Math.PI) * (rDs * .75);
+          const i_Y = cY + Math.sin(Math.random() * 2 * Math.PI) * (rDs * .75);
+          const o_X = cX + Math.cos(Math.random() * 2 * Math.PI) * (rDs * 0);
+          const o_Y = cY + Math.sin(Math.random() * 2 * Math.PI) * (rDs * 0);
 
-      // Add the new shape if a valid position was found
-      if (validPosition) {
-        shapes.push({
-          x: x,
-          y: y,
-          radius: radius,
-          symmetry: Math.floor(Math.random() * 8 + 6),
-          lineDensity: Math.floor(Math.random() * 30 + 20),
-          phaseShift: Math.random() * Math.PI * 2,
-          driftAmplitude: Math.random() * maxDriftWidth,
-          verticalSpeed: Math.random() * 1.5 + 0.5,
-          oscillationSpeed: Math.random() * 0.01 + 0.002,
-          driftOffset: Math.random() * Math.PI * 2,
-          color1: colors[Math.floor(Math.random() * colors.length)],
-          color2: colors[Math.floor(Math.random() * colors.length)],
-          colorTransitionSpeed: Math.random() * 0.07 + 0.05,
-        });
-      }
-    }
-  }
+          // Create a radial grd
+          const grd = ctx.createRadialGradient(i_X, i_Y, 0, cX, cY, rDs);
 
-  const colors = [
-    "#edbf0b",
-    "#a42820", // Red
-    "#f7382e", // Orange
-    "#0a7131", // Green
-    "#0caa48"
-  ];
+          // Use a for loop to add random stops
+          const sC = 9; // Number of random stops
+          for (let i = 0; i < sC; i++) {
+              grd.addColorStop(Math.random(), rPc());
+          }
 
-  function interpolateHexColor(color1, color2, factor) {
-    const hexToRgb = hex => [
-      parseInt(hex.slice(1, 3), 16),
-      parseInt(hex.slice(3, 5), 16),
-      parseInt(hex.slice(5, 7), 16)
-    ];
+          // Add the final stop explicitly at 1
+          grd.addColorStop(1, 'Red');
+          return grd;
+        }
 
-    const rgbToHex = ([r, g, b]) =>
-      `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b
-        .toString(16)
-        .padStart(2, "0")}`;
+            function rLc(canvas) {
+              canvas.width = 1;
+              canvas.style.width = "1vw";
+              canvas.height = 1;
+              canvas.style.height = "1vh";
+              const ctx = canvas.getContext('2d');
+              ctx && ctx.clearRect(0, 0, 1, 1);
+              canvas.remove();
+            }
 
-    const rgb1 = hexToRgb(color1);
-    const rgb2 = hexToRgb(color2);
+            let buffer;
+            let zzfx=(...t)=>zzfxP(zzfxG(...t));
+            let zzfxP=(...t)=>{let e=zzfxX.createBufferSource(),f=zzfxX.createBuffer(t.length,t[0].length,zzfxR);t.map((d,i)=>f.getChannelData(i).set(d)),e.buffer=f,e.connect(zzfxX.destination),e.start();return e};
+            let zzfxG=(q=1,k=.05,c=220,e=0,t=0,u=.1,r=0,F=1,v=0,z=0,w=0,A=0,l=0,B=0,x=0,G=0,d=0,y=1,m=0,C=0)=>{let b=2*Math.PI,H=v*=500*b/zzfxR**2,I=(0<x?1:-1)*b/4,D=c*=(1+2*k*Math.random()-k)*b/zzfxR,Z=[],g=0,E=0,a=0,n=1,J=0,K=0,f=0,p,h;e=99+zzfxR*e;m*=zzfxR;t*=zzfxR;u*=zzfxR;d*=zzfxR;z*=500*b/zzfxR**3;x*=b/zzfxR;w*=b/zzfxR;A*=zzfxR;l=zzfxR*l|0;for(h=e+m+t+u+d|0;a<h;Z[a++]=f)++K%(100*G|0)||(f=r?1<r?2<r?3<r?Math.sin((g%b)**3):Math.max(Math.min(Math.tan(g),1),-1):1-(2*g/b%2+2)%2:1-4*Math.abs(Math.round(g/b)-g/b):Math.sin(g),f=(l?1-C+C*Math.sin(2*Math.PI*a/l):1)*(0<f?1:-1)*Math.abs(f)**F*q*zzfxV*(a<e?a/e:a<e+m?1-(a-e)/m*(1-y):a<e+m+t?y:a<h-d?(h-a-d)/u*y:0),f=d?f/2+(d>a?0:(a<h-d?1:(h-a)/d)*Z[a-d|0]/2):f),p=(c+=v+=z)*Math.sin(E*x-I),g+=p-p*B*(1-1E9*(Math.sin(a)+1)%2),E+=p-p*B*(1-1E9*(Math.sin(a)**2+1)%2),n&&++n>A&&(c+=w,D+=w,n=0),!l||++J%l||(c=D,v=H,n=n||1);return Z};
+            let zzfxV=.3; // Volume
+            let zzfxR=44100; // Sample rate
+            let zzfxX=new(window.AudioContext||webkitAudioContext)
 
-    const interpolatedRgb = rgb1.map((value, index) =>
-      Math.round(value + factor * (rgb2[index] - value))
-    );
+            const canvas = document.getElementById('cnvs');
+            const ctx = canvas.getContext('2d');
+            const t_D = document.getElementById('timer');
+            const c_D = document.getElementById('tries');
+            const cnt_D = document.getElementById('counter');
+            const f5_i = document.getElementById('refresh');
+            const d_i = document.getElementById('download');
+            const ss_i = document.getElementById('sS');
 
-    return rgbToHex(interpolatedRgb);
-  }
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
 
+            const cX = canvas.width / 2;
+            const cY = canvas.height / 2;
+            const rDs = Math.min(canvas.width, canvas.height) / 2 - 40;
+            const rC = 15;
 
-  function updateShapes() {
-    for (let shape of shapes) {
-      // Subtle downward movement
-      shape.y += shape.verticalSpeed;
+            let rec = [];
+            let lCr = null;
+            let tI = null;
+            let s_Tm = null;
+            let cCt = 0;
 
-      // Gentle horizontal swaying
-      shape.x += Math.sin(time * shape.oscillationSpeed + shape.driftOffset) * (shape.driftAmplitude / 100);
+            function fE(element) {
+            element.classList.add('flash');
+            setTimeout(() => {
+                element.classList.remove('flash');
+            }, 200);
+            }
 
-      // Edge detection: Prevent flakes from leaving the canvas horizontally
-      if (shape.x - shape.radius < 0) {
-        shape.x = shape.radius; // Snap to the left edge
-      }
-      if (shape.x + shape.radius > canvas.width) {
-        shape.x = canvas.width - shape.radius; // Snap to the right edge
-      }
+            function bR(rect) {
+                const pCs = [];
+                const pCt = Math.floor((rect.width * rect.height) / 100);
 
-      // Reset position when shape goes off the bottom of the screen
-      if (shape.y - shape.radius > canvas.height) {
-        shape.y = -shape.radius; // Re-enter from top
-        shape.x = Math.random() * canvas.width; // Randomize horizontal position
-      }
+                        // Detect device type
+                const iAnd = /Android/i.test(navigator.userAgent);
+                const iIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-      shape.phaseShift += 0.002;
-    }
-  }
+                // Adjust speeds for devices
+                let dXr, dYr;
+                if (iAnd) {
+                    dXr = [-3, 3];
+                    dYr = [-3, 3];
+                    wid = [5, 20];
+                    hei = [5, 10];
+                } else if (iIOS) {
+                    dXr = [-4, 4];
+                    dYr = [-4, 4];
+                    wid = [5, 30];
+                    hei = [5, 10];
+                } else {
+                    dXr = [-3, 3];
+                    dYr = [-3, 3];
+                    wid = [20, 70];
+                    hei = [5, 10];
+                }
 
+                for (let i = 0; i < pCt; i++) {
+                    const pCe = {
+                        x: rect.x + rF(0, rect.width),
+                        y: rect.y + rF(0, rect.height),
+                        dx: rF(...dXr), // Random x movement in all directions
+                        dy: rF(...dYr), // Random y movement in all directions
+                        width: rF(...wid),
+                        height: rF(...hei),
+                        color: rPc(),
+                        opacity: 1.0, // Initial opacity (fully visible)
+                    };
+                    pCs.push(pCe);
+                }
 
-  function drawMandala(shape) {
-    const { x, y, radius, symmetry, lineDensity, phaseShift, color1, color2, colorTransitionSpeed } = shape;
-
-    ctx.save();
-    ctx.translate(x, y);
-
-    for (let i = 0; i < symmetry; i++) {
-      const angle = (i / symmetry) * Math.PI * 2 + phaseShift;
-      ctx.save();
-      ctx.rotate(angle);
-
-      for (let j = 0; j < lineDensity; j++) {
-        const offset = (j / lineDensity) * radius;
-
-        // Interpolate colors dynamically for animation
-        const factor = (Math.sin(time * colorTransitionSpeed + j * 0.1) + 1) / 2; // Smooth oscillation
-        const interpolatedColor = interpolateHexColor(color1, color2, factor);
-
-        const dynamicGradient = ctx.createLinearGradient(-offset, 0, offset, 0);
-        dynamicGradient.addColorStop(0, interpolatedColor);
-        dynamicGradient.addColorStop(1, "rgba(0, 0, 0, 1)");
-
-        ctx.strokeStyle = dynamicGradient;
-        ctx.lineWidth = 1;
-
-        ctx.beginPath();
-        ctx.moveTo(0, offset);
-        ctx.lineTo(offset, 0);
-        ctx.strokeStyle = "#ffffff";
-        ctx.stroke();
-      }
-
-      ctx.restore();
-    }
-
-    ctx.restore();
-  }
-
-  function updateShapes() {
-    for (let shape of shapes) {
-      // Subtle downward movement
-      shape.y += shape.verticalSpeed;
-
-      // Gentle horizontal swaying
-      shape.x += Math.sin(time * shape.oscillationSpeed + shape.driftOffset) * (shape.driftAmplitude / 100);
-
-      // Reset position when shape goes off the bottom of the screen
-      if (shape.y - shape.radius > canvas.height) {
-        shape.y = -shape.radius;
-        shape.x = Math.random() * canvas.width;
-      }
-
-      shape.phaseShift += 0.002;
-    }
-  }
-
-  function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    updateShapes();
-
-    for (const shape of shapes) {
-      drawMandala(shape);
-    }
-
-    time += 1;
-    requestAnimationFrame(animate);
-  }
-
-  initializeShapes();
-  animate();
+                return pCs;
+            }
 
 
-  // Function to draw the text
-  // Ensure canvas resizes dynamically
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    initializeShapes(); // Reinitialize shapes to fit new dimensions
-  }
+            function aP(pCs, callback) {
+                function step() {
+                    //ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    rDc();
 
-  // Function to draw the text
-  function drawText() {
-    const text = ["Happy", "Holidays"]; // Text to display
-    const fontSize = Math.min(canvas.width, canvas.height) / 4; // Dynamic font size
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const letterSpacing = fontSize * 0.1; // Add some space between letters
+                    pCs.forEach((pCe) => {
+                      const iAnd = /Android/i.test(navigator.userAgent);
+                      const iIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    ctx.save();
-    ctx.font = `bold ${fontSize}px Comic Sans MS`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
+                      if (iAnd) {
+                          var po = 0.075;
+                      } else if (iIOS) {
+                          var po = 0.2;
+                      } else {
+                          var po = 0.11;
+                      }
 
-    // Draw each letter individually
-    let letterIndex = 0; // Unique index for each letter instance
-    text.forEach((line, lineIndex) => {
-      const yOffset = lineIndex === 0 ? -fontSize * 0.7 : fontSize * 0.7; // Adjust y position for each line
-      let xOffset = centerX - (ctx.measureText(line).width / 2); // Start x position
+                        pCe.x += pCe.dx;
+                        pCe.y += pCe.dy;
+                        pCe.opacity -= po; // Gradually reduce opacity
 
-      for (const char of line) {
-        // Assign a color for each letter using its unique index
-        const color = textColors[letterColorIndices[letterIndex] % textColors.length];
-        ctx.fillStyle = color;
+                        if (pCe.opacity > 0) {
+                            ctx.globalAlpha = pCe.opacity; // Apply opacity
+                            ctx.fillStyle = pCe.color;
+                            ctx.fillRect(pCe.x, pCe.y, pCe.width, pCe.height);
+                            ctx.globalAlpha = 1.0; // Reset opacity
+                        }
+                    });
 
-        // Draw the letter
-        ctx.fillText(char, xOffset, centerY + yOffset);
+                    // Continue animation while pCs are visible
+                    if (pCs.some(pCe => pCe.opacity > 0)) {
+                        requestAnimationFrame(step);
+                    } else if (callback) {
+                        callback(); // Trigger callback after animation finishes
+                    }
+                }
 
-        // Move xOffset for the next letter
-        xOffset += ctx.measureText(char).width + letterSpacing;
-
-        letterIndex++; // Increment the unique index for the next letter instance
-      }
-    });
-
-    ctx.restore();
-  }
-
-  function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Update the blinking color for each letter instance every 30 frames
-    blinkTimer++;
-    if (blinkTimer % 30 === 0) {
-      for (let i = 0; i < letterColorIndices.length; i++) {
-        letterColorIndices[i] = (letterColorIndices[i] + 1) % textColors.length; // Cycle through colors
-      }
-    }
-
-    // Draw background flakes
-    updateShapes();
-    for (const shape of shapes.slice(0, Math.floor(shapes.length / 2))) {
-      drawMandala(shape);
-    }
-
-    // Draw the text in the center
-    drawText();
-
-    // Draw foreground flakes
-    for (const shape of shapes.slice(Math.floor(shapes.length / 2))) {
-      drawMandala(shape);
-    }
-
-    // Increment animation time
-    time += 1;
-    requestAnimationFrame(animate);
-  }
-
-  // Ensure the canvas resizes dynamically
-  window.addEventListener("resize", resizeCanvas);
-
-  // Initialize letterColorIndices for unique blinking
-  const text = ["Merry", "Christmas"];
-  letterColorIndices = []; // Ensure it's an array
-  text.forEach(line => {
-    for (let charIndex = 0; charIndex < line.length; charIndex++) {
-      letterColorIndices.push(Math.floor(Math.random() * textColors.length)); // Assign a random color index for each letter instance
-    }
-  });
-
-  // Call initialization and animation
-  resizeCanvas(); // Resize canvas to current window dimensions
-  animate();
+                step();
+            }
 
 
-  // Resize canvas dynamically
-  window.addEventListener("resize", () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    initializeShapes();
-  });
 
-  function refreshCanvasOnClick() {
-  const canvas = document.getElementById("patternCanvas");
-  canvas.addEventListener("click", () => {
-    location.reload(); // Reload the page when the canvas is clicked
-  });
-}
-refreshCanvasOnClick()
-</script>
+            function cR() {
+                const aL = Math.random() * 2 * Math.PI;
+                const dT = Math.random() * (rDs * 0.85);
+                const width = Math.random() * (canvas.width * 0.4) + (canvas.width * 0.05);
+                const height = Math.random() * (canvas.height * 0.4) + (canvas.height * 0.05);
 
+
+                const x = Math.max(
+                    Math.min(cX + Math.cos(aL) * dT - width / 2, canvas.width - width),
+                    0
+                );
+                const y = Math.max(
+                    Math.min(cY + Math.sin(aL) * dT - height / 2, canvas.height - height),
+                    0
+                );
+
+                const grd = cGrd();
+                return { x, y, width, height, grd, path: new Path2D() };
+            }
+
+
+            function dR(rect) {
+                rect.path.rect(rect.x, rect.y, rect.width, rect.height);
+                ctx.fillStyle = rect.grd;
+                ctx.globalAlpha = 0.7;
+                ctx.fill(rect.path);
+            }
+
+            function iR() {
+                rec = [];
+                for (let i = 0; i < rC; i++) {
+                    rec.push(cR());
+                }
+                cnt_D.textContent = `Layrz: ${rec.length}`;
+            }
+
+            function rDc() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'black';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(cX, cY, rDs, 0, 2 * Math.PI);
+                ctx.clip();
+
+                rec.forEach((rect, index) => {
+                    dR(rect);
+                    if (index === rec.length - 1) {
+                        lCr = rect.path;
+                    }
+                });
+
+                ctx.restore();
+            }
+
+            function dWm() {
+
+                // Set dimensions for the winner message
+                const rW = 300;
+                const rH = 100;
+                const r_X = cX - rW / 2;
+                const r_Y = cY - rH / 2;
+
+                // Clear the canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear everything
+                ctx.save(); // Save the current canvas state
+
+                // Draw the background rectangle
+                ctx.fillStyle = rPc();
+                ctx.fillRect(r_X, r_Y, rW, rH);
+
+                // Draw the winner text
+                ctx.font = 'bold 24px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = 'black';
+                ctx.fillText('WINNER!', r_X + rW / 2 + 2, r_Y + rH / 2 + 2);
+                ctx.fillStyle = 'white';
+                ctx.fillText('WINNER!', r_X + rW / 2, r_Y + rH / 2);
+
+                ctx.restore(); // Restore the canvas state
+            }
+
+
+
+            function sTr() {
+                if (tI) return;
+                s_Tm = Date.now();
+                tI = setInterval(() => {
+                    const eT = Math.floor((Date.now() - s_Tm) / 1000);
+                    const mNs = String(Math.floor(eT / 60)).padStart(2, '0');
+                    const sCs = String(eT % 60).padStart(2, '0');
+                    t_D.textContent = `${mNs}:${sCs}`;
+                }, 1000);
+            }
+
+            function stTr() {
+                clearInterval(tI);
+                tI = null;
+            }
+
+            const c_S = [.1,,128,.08,.22,.2,,.71,,-1.5,-924,.05,.12,.09,.33,.12,.09];
+            const inc_S = [.9,,75,.01,.01,.2,,.71,,-1.5,-924,1.05,.12,.09,.33,.12,.09];
+
+            let iGa = true;
+
+            //const winnerMessageDelay = 200; // Control delay for winner message (1 second)
+
+            canvas.addEventListener('click', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+                const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+                // Prevent further clicks after the game ends
+                if (!iGa) return;
+
+                if (!s_Tm) sTr();
+
+                if (rec.length > 0) {
+                    cCt++;
+                    c_D.textContent = `Tries: ${cCt}`;
+                }
+
+                if (lCr && ctx.isPointInPath(lCr, x, y)) {
+                    zzfx(...c_S);
+
+                    // Remove the clicked rectangle
+                    const rect = rec.pop();
+                    cnt_D.textContent = `Layrz: ${rec.length}`;
+
+                    if (rec.length === 0) {
+                        // Game is over, skip animation and display winner message
+                        stTr();
+                        iGa = false;
+
+                        //ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear everything
+                        // Play the winner tune
+                        for (let i = 0; i < 5; i++) {
+                            setTimeout(() => zzfx(...c_S), i * 100); // 300ms delay between each execution
+                        }
+
+                        dWm(); // Show the winner message
+                    } else {
+                        // Animate the breaking of the clicked rectangle
+                        const pCs = bR(rect);
+                        aP(pCs, () => {
+                            rDc(); // Redraw the remaining rec after animation
+                        });
+                    }
+                } else if (rec.length > 0) {
+                    zzfx(...inc_S);
+                }
+            });
+
+
+
+
+
+
+
+
+
+
+            document.getElementById('f5_i').addEventListener('click', () => {
+                fE(document.getElementById('f5_i'));
+                location.reload();
+            });
+
+            document.getElementById('d_i').addEventListener('click', () => {
+                // Trigger the flash effect
+                    setTimeout(() => {
+                fE(document.getElementById('d_i'));
+              }, 0); // Match the flash animation duration
+
+                // Create the offscreen canvas and context
+                const uSr = 4096; // 2K resolution
+                const oSc = document.createElement('canvas');
+                const oScX = oSc.getContext('2d');
+
+                // Set the offscreen canvas size
+                oSc.width = uSr;
+                oSc.height = uSr;
+
+                // Save the aspect ratio of the original canvas
+                const scale = uSr / Math.min(canvas.width, canvas.height);
+                const s_W = canvas.width * scale;
+                const s_H = canvas.height * scale;
+                const os_X = (uSr - s_W) / 2;
+                const os_Y = (uSr - s_H) / 2;
+
+                // Draw the image on the offscreen canvas
+                oScX.drawImage(canvas, os_X, os_Y, s_W, s_H);
+
+                // Capture the image data URL before delaying
+                const img = oSc.toDataURL('image/png');
+
+                // Delay the download to allow the flash animation to complete
+                setTimeout(() => {
+                    const link = document.createElement('a');
+                    link.download = 'art-4k.png';
+                    link.href = img; // Use the pre-captured image URL
+                    link.click();
+                }, 100); // Match the flash animation duration
+            });
+
+
+
+            ss_i.addEventListener('click', () => {
+                fE(document.getElementById('sS'));
+                const oSc = document.createElement('canvas');
+                const oScX = oSc.getContext('2d');
+
+                oSc.width = 300;
+                oSc.height = 250;
+
+                const now = new Date();
+                const dt = now.toLocaleDateString();
+                const tm = now.toLocaleTimeString();
+
+                oScX.fillStyle = 'black';
+                oScX.fillRect(0, 0, oSc.width, oSc.height);
+
+                oScX.fillStyle = 'white';
+                oScX.font = '16px Arial';
+                oScX.fillText(`Date: ${dt}`, 10, 40);
+                oScX.fillText(`Time: ${tm}`, 10, 70);
+                oScX.fillText(`Start Layrz: ${rC}`, 10, 110);
+                oScX.fillText(t_D.textContent, 10, 150);
+                oScX.fillText(c_D.textContent, 10, 190);
+                oScX.fillText(cnt_D.textContent, 10, 230);
+
+                const link = document.createElement('a');
+                link.download = 'stats.png';
+                link.href = oSc.toDataURL('image/png');
+                link.click();
+            });
+
+            iR();
+            rDc();
+
+
+                    window.addEventListener('pagehide', (event) => {
+                    var css = document.getElementsByTagName("canvas");
+                    var cL = Array.prototype.slice.call(css);
+                    cL.forEach(rLc);
+                    });
+        </script>
 </body>
 </html>
