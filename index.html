@@ -85,11 +85,38 @@
             font-size: 16px;
         }
 
-        .loader {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 18px;
-            color: #00ff00;
+        /* Modal for Logs */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            height: 80%;
+            overflow-y: scroll;
+        }
+
+        .close-btn {
+            background-color: red;
+            color: #fff;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            position: absolute;
+            top: 20px;
+            right: 20px;
         }
     </style>
 </head>
@@ -105,6 +132,10 @@
         <input type="text" id="searchInput" placeholder="Enter Policy ID or Wallet Address">
         <button onclick="handleSearch()">Search</button>
         <button onclick="pasteClipboard()">Paste</button>
+    </div>
+
+    <div class="search-container">
+        <select id="collectionDropdown" onchange="filterByCollection()" style="display:none;"></select>
         <select id="viewDropdown" onchange="filterAssets()">
             <option value="10">10</option>
             <option value="20" selected>20</option>
@@ -113,42 +144,58 @@
         </select>
     </div>
 
-    <div class="search-container">
-        <select id="collectionDropdown" onchange="filterByCollection()" style="display:none;"></select>
-    </div>
-
     <div id="assetCount"></div>
-    <div id="loader" class="loader"></div>
     <div id="assetGrid"></div>
 </main>
+
+<!-- Modal for Logs -->
+<div id="logModal" class="modal">
+    <div class="modal-content">
+        <button class="close-btn" onclick="closeLogModal()">Close</button>
+        <h2>Search Logs</h2>
+        <pre id="logContent"></pre>
+    </div>
+</div>
 
 <script>
     const BLOCKFROST_API_KEY = 'mainnetFacOFHKb6AQFIygQqyOz9PIhkjzTPHTR';
     const BLOCKFROST_URL = 'https://cardano-mainnet.blockfrost.io/api/v0';
     let cachedAssets = [];
+    let logs = '';
 
-    // Paste button functionality
+    function logMessage(message) {
+        logs += message + '\n';
+        document.getElementById('logContent').innerText = logs;
+    }
+
+    function openLogModal() {
+        document.getElementById('logModal').style.display = 'flex';
+    }
+
+    function closeLogModal() {
+        document.getElementById('logModal').style.display = 'none';
+    }
+
     async function pasteClipboard() {
         const text = await navigator.clipboard.readText();
         document.getElementById('searchInput').value = text;
     }
 
-    function hexToString(hex) {
-        return decodeURIComponent(hex.replace(/(..)/g, '%$1'));
-    }
-
     async function handleSearch() {
+        logs = '';
+        openLogModal();
         const input = document.getElementById('searchInput').value.trim();
-        const loader = document.getElementById('loader');
-        loader.innerText = 'Loading assets...';
-        cachedAssets = [];
 
+        logMessage(`Search initiated for: ${input}`);
         let assets = [];
 
         if (/^addr1|stake1/i.test(input)) {
+            logMessage('Detected Wallet Address. Fetching stake address...');
             const stakeAddress = await getStakeAddress(input);
+            logMessage(`Stake Address: ${stakeAddress}`);
             assets = await fetchAssetsByAddress(stakeAddress);
         } else if (/^[a-f0-9]{56,64}$/i.test(input)) {
+            logMessage('Detected Policy ID. Fetching assets...');
             assets = await fetchAssetsByPolicy(input);
         } else {
             alert('Invalid input.');
@@ -159,12 +206,10 @@
             cachedAssets = assets;
             displayCollections(assets);
             renderAssets(assets);
-            document.getElementById('assetCount').innerText = `Total Assets Found: ${assets.length}`;
+            logMessage(`Fetched ${assets.length} assets.`);
         } else {
-            document.getElementById('assetGrid').innerHTML = '<p>No assets found.</p>';
+            logMessage('No assets found.');
         }
-
-        loader.innerText = '';
     }
 
     async function getStakeAddress(address) {
@@ -189,58 +234,13 @@
         return allAssets;
     }
 
-    async function fetchAssetsByAddress(stakeAddress) {
-        let page = 1, allUtxos = [];
-        while (true) {
-            const res = await fetch(`${BLOCKFROST_URL}/accounts/${stakeAddress}/addresses/assets?page=${page}`, {
-                headers: { project_id: BLOCKFROST_API_KEY }
-            });
-            const utxos = await res.json();
-            if (!utxos.length) break;
-            allUtxos = allUtxos.concat(utxos);
-            page++;
-        }
-        return allUtxos;
-    }
-
-    function displayCollections(assets) {
-        const dropdown = document.getElementById('collectionDropdown');
-        const collections = [...new Set(assets.map(a => a.policy_id))];
-
-        if (collections.length > 1) {
-            dropdown.style.display = 'block';
-            dropdown.innerHTML = `<option value="all">All Collections</option>`;
-            collections.forEach(col => dropdown.innerHTML += `<option value="${col}">${col}</option>`);
-        } else {
-            dropdown.style.display = 'none';
-        }
-    }
-
-    function filterByCollection() {
-        const selected = document.getElementById('collectionDropdown').value;
-        const filteredAssets = selected === 'all' ? cachedAssets : cachedAssets.filter(a => a.policy_id === selected);
-        renderAssets(filteredAssets);
-    }
-
-    function parseImage(asset) {
-        const image = asset.onchain_metadata?.image;
-        if (image?.startsWith('ipfs://')) {
-            return `https://ipfs.io/ipfs/${image.slice(7)}`;
-        } else if (asset.onchain_metadata?.files) {
-            return asset.onchain_metadata.files[0]?.src;
-        } else {
-            return 'https://via.placeholder.com/150?text=No+Image';
-        }
-    }
-
     function renderAssets(assets) {
         const assetGrid = document.getElementById('assetGrid');
         assetGrid.innerHTML = '';
 
         assets.forEach(asset => {
-            const imgSrc = parseImage(asset);
-            const assetName = asset.onchain_metadata?.name || hexToString(asset.asset_name);
-
+            const imgSrc = asset.onchain_metadata?.image || 'https://via.placeholder.com/100';
+            const assetName = asset.onchain_metadata?.name || 'Unnamed Asset';
             const card = document.createElement('div');
             card.className = 'asset-card';
             card.innerHTML = `<img src="${imgSrc}" class="asset-image"><p>${assetName}</p>`;
