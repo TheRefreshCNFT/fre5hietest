@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cardano Asset Explorer</title>
     <style>
-        /* Reset */
         * {
             margin: 0;
             padding: 0;
@@ -29,7 +28,6 @@
             margin-right: 15px;
         }
 
-        /* Search Bar */
         .search-container {
             display: flex;
             align-items: center;
@@ -81,45 +79,6 @@
             border-radius: 5px;
         }
 
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: #222;
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 600px;
-            text-align: center;
-            color: #fff;
-        }
-
-        /* Loader */
-        .loader {
-            border: 8px solid #333;
-            border-top: 8px solid #fff;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-            margin: auto;
-            display: none;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
         #assetCount {
             text-align: center;
             margin-top: 10px;
@@ -136,14 +95,12 @@
 
 <main>
     <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Enter Policy ID or Wallet Address">
+        <input type="text" id="searchInput" placeholder="Enter Policy ID">
         <button onclick="handleSearch()">Search</button>
         <select id="viewDropdown" onchange="handleSearch()">
             <option value="10">10</option>
             <option value="20" selected>20</option>
-            <option value="30">30</option>
             <option value="50">50</option>
-            <option value="100">100</option>
             <option value="all">All</option>
         </select>
     </div>
@@ -153,27 +110,28 @@
     </div>
 
     <div id="assetCount"></div>
-    <div class="loader" id="loader"></div>
     <div id="assetGrid"></div>
 </main>
 
 <script>
-    const BLOCKFROST_API_KEY = 'mainnetFacOFHKb6AQFIygQqyOz9PIhkjzTPHTR';
+    const BLOCKFROST_API_KEY = 'YOUR_BLOCKFROST_API_KEY';
     const BLOCKFROST_URL = 'https://cardano-mainnet.blockfrost.io/api/v0';
     let cachedAssets = [];
 
+    function hexToString(hex) {
+        return decodeURIComponent(hex.replace(/(..)/g, '%$1'));
+    }
+
     async function handleSearch() {
-        const input = document.getElementById('searchInput').value.trim();
+        const policyId = document.getElementById('searchInput').value.trim();
         const viewLimit = document.getElementById('viewDropdown').value;
         const assetGrid = document.getElementById('assetGrid');
-        const loader = document.getElementById('loader');
         const assetCount = document.getElementById('assetCount');
 
         assetGrid.innerHTML = '';
-        loader.style.display = 'block';
-        assetCount.innerText = '';
+        assetCount.innerText = 'Loading assets...';
 
-        const assets = await fetchAssets(input);
+        const assets = await fetchAssets(policyId);
         if (assets.length) {
             cachedAssets = assets;
             displayCollections(assets);
@@ -182,22 +140,22 @@
         } else {
             assetGrid.innerHTML = '<p>No assets found.</p>';
         }
-
-        loader.style.display = 'none';
     }
 
-    async function fetchAssets(input) {
-        try {
-            const endpoint = /^[a-f0-9]{56,64}$/i.test(input) ? `/assets/policy/${input}` : `/addresses/${input}/utxos`;
-            const res = await fetch(`${BLOCKFROST_URL}${endpoint}`, {
-                headers: { project_id: BLOCKFROST_API_KEY }
+    async function fetchAssets(policyId) {
+        let page = 1;
+        let allAssets = [];
+
+        while (true) {
+            const response = await fetch(`${BLOCKFROST_URL}/assets/policy/${policyId}?page=${page}`, {
+                headers: { 'project_id': BLOCKFROST_API_KEY }
             });
-            return await res.json();
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            alert('Error fetching data.');
-            return [];
+            const assets = await response.json();
+            if (!assets.length) break;
+            allAssets = allAssets.concat(assets);
+            page++;
         }
+        return allAssets;
     }
 
     function displayCollections(assets) {
@@ -226,17 +184,31 @@
         renderAssets(filteredAssets, viewLimit);
     }
 
+    function parseImage(asset) {
+        const image = asset.onchain_metadata?.image;
+        if (image?.startsWith('ipfs://')) {
+            return `https://ipfs.io/ipfs/${image.slice(7)}`;
+        } else if (asset.onchain_metadata?.files) {
+            return asset.onchain_metadata.files[0]?.src;
+        } else {
+            return 'https://via.placeholder.com/150?text=No+Image';
+        }
+    }
+
     function renderAssets(assets, limit) {
         const assetGrid = document.getElementById('assetGrid');
         const displayAssets = limit === 'all' ? assets : assets.slice(0, limit);
 
         assetGrid.innerHTML = '';
         displayAssets.forEach(asset => {
+            const imgSrc = parseImage(asset);
+            const assetName = asset.onchain_metadata?.name || hexToString(asset.asset_name) || 'Unnamed Asset';
+
             const card = document.createElement('div');
             card.className = 'asset-card';
             card.innerHTML = `
-                <img src="https://via.placeholder.com/100" class="asset-image">
-                <p>${asset.asset_name || 'Unnamed Asset'}</p>
+                <img src="${imgSrc}" class="asset-image">
+                <p>${assetName}</p>
             `;
             assetGrid.appendChild(card);
         });
