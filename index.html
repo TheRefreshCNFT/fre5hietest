@@ -170,8 +170,6 @@
 const BLOCKFROST_URL = 'https://cardano-mainnet.blockfrost.io/api/v0';
 const cache = new Map();
 
-
-
 async function handleSearch() {
     const input = document.getElementById('searchInput').value.trim();
     const viewLimit = document.getElementById('viewDropdown').value;
@@ -203,6 +201,7 @@ async function handleSearch() {
     loader.style.display = 'none';
 }
 
+// Fetch assets using Blockfrost API
 async function fetchAssets(input) {
     try {
         let endpoint = /^[a-f0-9]{56,64}$/i.test(input) ? `/assets/policy/${input}` : `/addresses/${input}/utxos`;
@@ -221,6 +220,37 @@ async function fetchAssets(input) {
     }
 }
 
+// Improved handling for images and on-chain content
+function parseAssetDisplay(asset) {
+    let image = asset.onchain_metadata?.image || asset.metadata?.image;
+
+    // Prioritize on-chain Base64/UTF-8 content in files.src
+    if (asset.onchain_metadata?.files && asset.onchain_metadata.files.length > 0) {
+        const fileSrc = asset.onchain_metadata.files[0].src || asset.metadata?.files[0]?.src;
+
+        if (fileSrc.startsWith('data:text/html') || fileSrc.startsWith('data:text/plain')) {
+            return { type: 'iframe', content: fileSrc };
+        } else if (fileSrc.startsWith('data:image') || fileSrc.startsWith('data:application')) {
+            return { type: 'image', content: fileSrc };
+        }
+    }
+
+    // Standard image handling
+    if (image) {
+        if (image.startsWith('ipfs://')) {
+            return { type: 'image', content: `https://ipfs.io/ipfs/${image.slice(7)}` };
+        } else if (image.startsWith('ar://')) {
+            return { type: 'image', content: `https://arweave.net/${image.slice(5)}` };
+        } else if (image.startsWith('http') || image.startsWith('data:image')) {
+            return { type: 'image', content: image };
+        }
+    }
+
+    // Fallback
+    return { type: 'image', content: 'https://via.placeholder.com/150?text=No+Preview' };
+}
+
+// Renders assets in the grid
 function renderAssets(assets, limit) {
     const assetGrid = document.getElementById('assetGrid');
     assetGrid.innerHTML = '';
@@ -228,39 +258,46 @@ function renderAssets(assets, limit) {
     const limitedAssets = limit === 'all' ? assets : assets.slice(0, limit);
 
     limitedAssets.forEach(asset => {
-        const img = parseImageUrl(asset);
+        const display = parseAssetDisplay(asset);
+        const assetName = asset.onchain_metadata?.name || asset.metadata?.name || 'Unnamed Asset';
+
         const card = document.createElement('div');
         card.className = 'asset-card';
-        card.innerHTML = `
-            <img src="${img}" alt="Asset Image" class="asset-image">
-            <p>${asset.onchain_metadata?.name || 'Unnamed Asset'}</p>
-        `;
+
+        if (display.type === 'iframe') {
+            card.innerHTML = `
+                <iframe src="${display.content}" style="width:100px; height:100px; border:none;"></iframe>
+                <p>${assetName}</p>
+            `;
+        } else {
+            card.innerHTML = `
+                <img src="${display.content}" alt="${assetName}" class="asset-image">
+                <p>${assetName}</p>
+            `;
+        }
+
         card.onclick = () => openModal(asset);
         assetGrid.appendChild(card);
     });
 }
 
-function parseImageUrl(asset) {
-    let image = asset.onchain_metadata?.image;
-    if (!image && asset.onchain_metadata?.files) {
-        image = asset.onchain_metadata.files[0]?.src;
-    }
-
-    if (!image) return 'https://via.placeholder.com/150?text=No+Image';
-    if (image.startsWith('ipfs://')) return `https://ipfs.io/ipfs/${image.slice(7)}`;
-    if (image.startsWith('ar://')) return `https://arweave.net/${image.slice(5)}`;
-    if (image.startsWith('data:image')) return image;
-    if (image.startsWith('http')) return image;
-    return 'https://via.placeholder.com/150?text=Invalid+Image';
-}
-
+// Modal to view asset details
 function openModal(asset) {
     document.getElementById('metadataModal').style.display = 'flex';
-    const img = parseImageUrl(asset);
+    const display = parseAssetDisplay(asset);
+    const assetName = asset.onchain_metadata?.name || asset.metadata?.name || 'Unnamed Asset';
+
+    let content;
+    if (display.type === 'iframe') {
+        content = `<iframe src="${display.content}" style="width:100%; height:500px; border:none;"></iframe>`;
+    } else {
+        content = `<img src="${display.content}" alt="Asset Image" style="max-width: 100%; height: auto;">`;
+    }
+
     document.getElementById('metadataDetails').innerHTML = `
-        <h2>${asset.onchain_metadata?.name || 'Unnamed Asset'}</h2>
-        <img src="${img}" alt="Asset Image" style="max-width: 100%; height: auto;">
-        <pre>${JSON.stringify(asset.onchain_metadata, null, 2)}</pre>
+        <h2>${assetName}</h2>
+        ${content}
+        <pre>${JSON.stringify(asset.onchain_metadata || asset.metadata, null, 2)}</pre>
     `;
 }
 
@@ -268,14 +305,20 @@ function closeModal() {
     document.getElementById('metadataModal').style.display = 'none';
 }
 
+// Full-screen viewer fix
 function viewFullScreen() {
+    const iframe = document.querySelector('#metadataDetails iframe');
     const img = document.querySelector('#metadataDetails img');
-    if (img && img.requestFullscreen) {
+
+    if (iframe && iframe.requestFullscreen) {
+        iframe.requestFullscreen();
+    } else if (img && img.requestFullscreen) {
         img.requestFullscreen();
     } else {
-        alert('Image not available for full-screen view.');
+        alert('No content available for full-screen view.');
     }
 }
+
 
 
     </script>
