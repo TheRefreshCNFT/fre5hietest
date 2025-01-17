@@ -141,14 +141,13 @@
             <input type="text" id="searchInput" placeholder="Enter Policy ID or Wallet Address">
             <button onclick="handleSearch()">Search</button>
             <select id="viewDropdown" onchange="handleSearch()">
-    <option value="10">10</option>
-    <option value="20" selected>20</option>
-    <option value="30">30</option>
-    <option value="50">50</option>
-    <option value="100">100</option>
-    <option value="all">All</option>
-</select>
-
+                <option value="10">10</option>
+                <option value="20" selected>20</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="all">All</option>
+            </select>
         </div>
 
         <div class="loader" id="loader"></div>
@@ -165,162 +164,77 @@
     </div>
 
     <script>
-        const BLOCKFROST_API_KEY = 'mainnetFacOFHKb6AQFIygQqyOz9PIhkjzTPHTR';  // Replace with your API key
+        const BLOCKFROST_API_KEY = 'mainnetFacOFHKb6AQFIygQqyOz9PIhkjzTPHTR';  // Replace with your actual API key
+        const BLOCKFROST_URL = 'https://cardano-mainnet.blockfrost.io/api/v0';
+        const cache = new Map();
 
-const BLOCKFROST_URL = 'https://cardano-mainnet.blockfrost.io/api/v0';
-const cache = new Map();
-
-async function handleSearch() {
-    const input = document.getElementById('searchInput').value.trim();
-    const viewLimit = document.getElementById('viewDropdown').value;
-    const assetGrid = document.getElementById('assetGrid');
-    const loader = document.getElementById('loader');
-
-    assetGrid.innerHTML = '';
-    loader.style.display = 'block';
-
-    if (!/^addr1|stake1|[a-f0-9]{56,64}$/i.test(input)) {
-        alert('Invalid input.');
-        loader.style.display = 'none';
-        return;
-    }
-
-    if (cache.has(input)) {
-        renderAssets(cache.get(input), viewLimit);
-        loader.style.display = 'none';
-        return;
-    }
-
-    const assets = await fetchAssets(input);
-    if (assets.length) {
-        cache.set(input, assets);
-        renderAssets(assets, viewLimit);
-    } else {
-        assetGrid.innerHTML = '<p>No assets found.</p>';
-    }
-    loader.style.display = 'none';
-}
-
-// Fetch assets using Blockfrost API
-async function fetchAssets(input) {
-    try {
-        let endpoint = /^[a-f0-9]{56,64}$/i.test(input) ? `/assets/policy/${input}` : `/addresses/${input}/utxos`;
-        const res = await fetch(`${BLOCKFROST_URL}${endpoint}`, {
-            headers: { project_id: BLOCKFROST_API_KEY }
-        });
-
-        if (!res.ok) throw new Error(`API Error: ${res.status}`);
-        const data = await res.json();
-        console.log('Fetched Data:', JSON.stringify(data, null, 2));
-        return data;
-
-    } catch (error) {
-        alert(`Error fetching data: ${error.message}`);
-        return [];
-    }
-}
-
-// Improved handling for images and on-chain content
-function parseAssetDisplay(asset) {
-    let image = asset.onchain_metadata?.image || asset.metadata?.image;
-
-    // Prioritize on-chain Base64/UTF-8 content in files.src
-    if (asset.onchain_metadata?.files && asset.onchain_metadata.files.length > 0) {
-        const fileSrc = asset.onchain_metadata.files[0].src || asset.metadata?.files[0]?.src;
-
-        if (fileSrc.startsWith('data:text/html') || fileSrc.startsWith('data:text/plain')) {
-            return { type: 'iframe', content: fileSrc };
-        } else if (fileSrc.startsWith('data:image') || fileSrc.startsWith('data:application')) {
-            return { type: 'image', content: fileSrc };
-        }
-    }
-
-    // Standard image handling
-    if (image) {
-        if (image.startsWith('ipfs://')) {
-            return { type: 'image', content: `https://ipfs.io/ipfs/${image.slice(7)}` };
-        } else if (image.startsWith('ar://')) {
-            return { type: 'image', content: `https://arweave.net/${image.slice(5)}` };
-        } else if (image.startsWith('http') || image.startsWith('data:image')) {
-            return { type: 'image', content: image };
-        }
-    }
-
-    // Fallback
-    return { type: 'image', content: 'https://via.placeholder.com/150?text=No+Preview' };
-}
-
-// Renders assets in the grid
-function renderAssets(assets, limit) {
-    const assetGrid = document.getElementById('assetGrid');
-    assetGrid.innerHTML = '';
-
-    const limitedAssets = limit === 'all' ? assets : assets.slice(0, limit);
-
-    limitedAssets.forEach(asset => {
-        const display = parseAssetDisplay(asset);
-        const assetName = asset.onchain_metadata?.name || asset.metadata?.name || 'Unnamed Asset';
-
-        const card = document.createElement('div');
-        card.className = 'asset-card';
-
-        if (display.type === 'iframe') {
-            card.innerHTML = `
-                <iframe src="${display.content}" style="width:100px; height:100px; border:none;"></iframe>
-                <p>${assetName}</p>
-            `;
-        } else {
-            card.innerHTML = `
-                <img src="${display.content}" alt="${assetName}" class="asset-image">
-                <p>${assetName}</p>
-            `;
+        // Decode hex asset names
+        function decodeHex(hex) {
+            return hex ? decodeURIComponent(hex.replace(/\s+/g, '').replace(/([0-9a-f]{2})/gi, '%$1')) : 'Unnamed Asset';
         }
 
-        card.onclick = () => openModal(asset);
-        assetGrid.appendChild(card);
-    });
-}
+        // Get the correct asset name
+        function getAssetName(asset) {
+            return asset.onchain_metadata?.name ||
+                   asset.metadata?.name ||
+                   decodeHex(asset.asset_name) ||
+                   asset.fingerprint ||
+                   'Unnamed Asset';
+        }
 
-// Modal to view asset details
-function openModal(asset) {
-    document.getElementById('metadataModal').style.display = 'flex';
-    const display = parseAssetDisplay(asset);
-    const assetName = asset.onchain_metadata?.name || asset.metadata?.name || 'Unnamed Asset';
+        // Handle asset preview display
+        function parseAssetDisplay(asset) {
+            let image = asset.onchain_metadata?.image || asset.metadata?.image;
+            if (asset.onchain_metadata?.files) {
+                const fileSrc = asset.onchain_metadata.files[0]?.src;
+                if (fileSrc.startsWith('data:text/html')) {
+                    return { type: 'iframe', content: fileSrc };
+                }
+            }
+            if (image?.startsWith('ipfs://')) return { type: 'image', content: `https://ipfs.io/ipfs/${image.slice(7)}` };
+            return { type: 'image', content: 'https://via.placeholder.com/150?text=No+Preview' };
+        }
 
-    let content;
-    if (display.type === 'iframe') {
-        content = `<iframe src="${display.content}" style="width:100%; height:500px; border:none;"></iframe>`;
-    } else {
-        content = `<img src="${display.content}" alt="Asset Image" style="max-width: 100%; height: auto;">`;
-    }
+        async function fetchAssets(input) {
+            try {
+                const endpoint = /^[a-f0-9]{56,64}$/i.test(input) ? `/assets/policy/${input}` : `/addresses/${input}/utxos`;
+                const res = await fetch(`${BLOCKFROST_URL}${endpoint}`, {
+                    headers: { project_id: BLOCKFROST_API_KEY }
+                });
+                if (!res.ok) throw new Error(`API Error: ${res.status}`);
+                return await res.json();
+            } catch (error) {
+                alert(`Error fetching data: ${error.message}`);
+                return [];
+            }
+        }
 
-    document.getElementById('metadataDetails').innerHTML = `
-        <h2>${assetName}</h2>
-        ${content}
-        <pre>${JSON.stringify(asset.onchain_metadata || asset.metadata, null, 2)}</pre>
-    `;
-}
+        function renderAssets(assets, limit) {
+            const assetGrid = document.getElementById('assetGrid');
+            const displayLimit = limit === 'all' ? assets : assets.slice(0, limit);
+            assetGrid.innerHTML = '';
 
-function closeModal() {
-    document.getElementById('metadataModal').style.display = 'none';
-}
+            displayLimit.forEach(asset => {
+                const display = parseAssetDisplay(asset);
+                const assetName = getAssetName(asset);
 
-// Full-screen viewer fix
-function viewFullScreen() {
-    const iframe = document.querySelector('#metadataDetails iframe');
-    const img = document.querySelector('#metadataDetails img');
+                const card = document.createElement('div');
+                card.className = 'asset-card';
+                card.innerHTML = `<img src="${display.content}" alt="${assetName}" class="asset-image"><p>${assetName}</p>`;
+                card.onclick = () => openModal(asset);
+                assetGrid.appendChild(card);
+            });
+        }
 
-    if (iframe && iframe.requestFullscreen) {
-        iframe.requestFullscreen();
-    } else if (img && img.requestFullscreen) {
-        img.requestFullscreen();
-    } else {
-        alert('No content available for full-screen view.');
-    }
-}
+        function openModal(asset) {
+            const display = parseAssetDisplay(asset);
+            document.getElementById('metadataModal').style.display = 'flex';
+            document.getElementById('metadataDetails').innerHTML = `<img src="${display.content}" style="width:100%">`;
+        }
 
-
-
+        function closeModal() {
+            document.getElementById('metadataModal').style.display = 'none';
+        }
     </script>
 </body>
 </html>
