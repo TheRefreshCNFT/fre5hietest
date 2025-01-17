@@ -3,593 +3,281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardano Asset Explorer</title>
     <style>
-        * { margin: 0; padding: 0; overflow: hidden;}
-        html, body { width: 100%; height: 100%; background-color: black;}
-        canvas { display: block; }
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
 
-        #stats {
-                    position: absolute;
-                    top: 0;
-                    left: 45%;
-                    transform: translateX(-50%);
-                    display: flex;
-                    justify-content: flex-start;
-                    align-items: center;
-                    padding: 0px 0px;
-                    padding-right: 10px;
-                    box-sizing: border-box;
-                    font-family: Arial, sans-serif;
-                    color: white;
-                    flex-wrap: nowrap; /* Prevent stacking */
-                }
+        body {
+            background-color: #000;
+            color: #fff;
+        }
 
-                #stats div {
-                    line-height: 45px;
-                    font-size: 15px;
-                    margin: 0;
-                    white-space: nowrap; /* Ensure text stays in a single line */
-                    display: flex;
-                    align-items: center;
-                }
+        header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+        }
 
-                #stats div:not(:last-child) {
-                    margin-right: 12px;
-                }
+        #logo {
+            width: 50px;
+            margin-right: 15px;
+        }
 
-                #icons {
-                  position: absolute;
-                  top: 0;
-                  left: 55%;
-                  transform: translateX(-50%);
-                  display: flex;
-                  justify-content: flex-end;
-                  align-items: center;
-                  padding: 5px 0;
-                  padding-left: 10px;
-                  box-sizing: border-box;
-                  flex-wrap: nowrap; /* Prevent stacking */
-                  gap: 15px;
-                }
+        /* Search Bar */
+        .search-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px;
+        }
 
-                .iB {
-                    width: 34px;
-                    height: 34px;
-                    font-size: 22px;
-                    text-align: center;
-                    line-height: 36px;
-                    background-color: #2a74c1;
-                    border-radius: 4px;
-                    vertical-align: middle;
-                    display: inline-block;
-                    cursor: pointer;
-                }
+        #searchInput {
+            width: 400px;
+            padding: 10px;
+            background-color: #333;
+            border: 1px solid #fff;
+            color: #fff;
+        }
 
-                #cnvs {
-                    padding: 15px 0;
-                }
+        button, #viewDropdown {
+            padding: 10px 20px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
 
-                .flash {
-                    animation: flashEffect 0.2s ease-in-out;
-                }
+        #assetGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            justify-items: center;
+        }
 
-                @keyframes flashEffect {
-                    0% {
-                        background-color: white;
-                        color: black;
-                    }
-                    100% {
-                        background-color: #2a74c1; /* Original background color */
-                        color: white; /* Original text color */
-                    }
-                }
+        .asset-card {
+            width: 100px;
+            padding: 10px;
+            background-color: #1a1a1a;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
 
-                /* For screens smaller than 1300px */
-                @media (max-width: 1290px) {
-                    #stats {
-                        left: 39%;
-                        padding: 10px 0; /* Adjust padding for smaller screens */
-                    }
-                    #stats div {
-                        font-size: 30px;
-                    }
+        .asset-card:hover {
+            transform: scale(1.1);
+        }
 
-                    #icons {
-                        left: 61%;
-                        gap: 20px;
-                    }
+        .asset-image {
+            width: 100%;
+            height: 100px;
+            object-fit: contain;
+            border-radius: 5px;
+        }
 
-                    .iB {
-                        width: 50px;
-                        height: 50px;
-                        font-size: 35px;
-                        line-height: 50px;
-                    }
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+        }
 
-                    #cnvs {
-                    padding: 30px 0;
-                    }
-                  }
+        .modal-content {
+            background-color: #222;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            text-align: center;
+            color: #fff;
+        }
 
-                /* For screens smaller than 1000px */
-                @media (max-width: 1024px) {
-                    #stats {
-                        left: 34%;
-                        padding: 5px 0; /* Adjust padding for smaller screens */
-                    }
-                    #stats div {
-                        line-height: 60px;
-                    }
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 30px;
+            cursor: pointer;
+        }
 
-                    .iB {
-                        width: 63px;
-                        height: 63px;
-                        font-size: 46px;
-                        line-height: 63px;
-                    }
+        /* Loader */
+        .loader {
+            border: 8px solid #333;
+            border-top: 8px solid #fff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: auto;
+            display: none;
+        }
 
-                    #icons {
-                        left: 66%;
-                    }
-                    #cnvs {
-                      padding: 32px 0;
-                    }
-                }
-
-                /* For screens smaller than 915px */
-                @media (max-width: 915px) {
-                    #stats {
-                        left: 50%;
-                    }
-
-                    #icons {
-                        left: 50%;
-                        padding: 55px;
-                    }
-
-                }
-
-                /* For screens smaller than 540px */
-                @media (max-width: 545px) {
-                  #stats div {
-                      font-size: 25px;
-                  }
-
-                    .iB {
-                        font-size: 45px;
-                        line-height: 65px;
-                    }
-                }
-
-    </style>
-
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
-    <canvas id="cnvs"></canvas>
-    <div id="stats">
-        <div id="timer">00:00</div>
-        <div id="tries">Tries: 0</div>
-        <div id="counter">Layrz: 15</div>
+
+    <header>
+        <img src="https://cryptologos.cc/logos/cardano-ada-logo.png" alt="Cardano Logo" id="logo">
+        <h1>Cardano Asset Explorer</h1>
+    </header>
+
+    <main>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Enter Policy ID or Wallet Address">
+            <button onclick="handleSearch()">Search</button>
+            <select id="viewDropdown" onchange="handleSearch()">
+    <option value="10">10</option>
+    <option value="20" selected>20</option>
+    <option value="30">30</option>
+    <option value="50">50</option>
+    <option value="100">100</option>
+    <option value="all">All</option>
+</select>
+
+        </div>
+
+        <div class="loader" id="loader"></div>
+        <div id="assetGrid"></div>
+    </main>
+
+    <!-- Modal -->
+    <div id="metadataModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="metadataDetails"></div>
+            <button onclick="viewFullScreen()">View in Full Screen</button>
+        </div>
     </div>
-    <div id="icons">
-        <span class="iB" id="f5_i">&#128260;</span>
-        <span class="iB" id="d_i">&#11015;&#65039;</span>
-        <span class="iB" id="sS" >&#127942;</span>
-    </div>
+
     <script>
-        const c_Pl = ['SlateBlue', 'Snow', 'Tomato', 'Orchid', 'Cyan'];
-        function rPc() {
-            return c_Pl[Math.floor(Math.random() * c_Pl.length)];
-        }
-
-        function rF(min, max) {
-            return Math.random() * (max - min) + min;
-        }
-
-        function cGrd() {
-          // Randomize the center point within the radial view
-          const i_X = cX + Math.cos(Math.random() * 2 * Math.PI) * (rDs * .75);
-          const i_Y = cY + Math.sin(Math.random() * 2 * Math.PI) * (rDs * .75);
-          const o_X = cX + Math.cos(Math.random() * 2 * Math.PI) * (rDs * 0);
-          const o_Y = cY + Math.sin(Math.random() * 2 * Math.PI) * (rDs * 0);
-
-          // Create a radial grd
-          const grd = ctx.createRadialGradient(i_X, i_Y, 0, cX, cY, rDs);
-
-          // Use a for loop to add random stops
-          const sC = 9; // Number of random stops
-          for (let i = 0; i < sC; i++) {
-              grd.addColorStop(Math.random(), rPc());
-          }
-
-          // Add the final stop explicitly at 1
-          grd.addColorStop(1, 'Red');
-          return grd;
-        }
-
-            function rLc(canvas) {
-              canvas.width = 1;
-              canvas.style.width = "1vw";
-              canvas.height = 1;
-              canvas.style.height = "1vh";
-              const ctx = canvas.getContext('2d');
-              ctx && ctx.clearRect(0, 0, 1, 1);
-              canvas.remove();
-            }
-
-            let buffer;
-            let zzfx=(...t)=>zzfxP(zzfxG(...t));
-            let zzfxP=(...t)=>{let e=zzfxX.createBufferSource(),f=zzfxX.createBuffer(t.length,t[0].length,zzfxR);t.map((d,i)=>f.getChannelData(i).set(d)),e.buffer=f,e.connect(zzfxX.destination),e.start();return e};
-            let zzfxG=(q=1,k=.05,c=220,e=0,t=0,u=.1,r=0,F=1,v=0,z=0,w=0,A=0,l=0,B=0,x=0,G=0,d=0,y=1,m=0,C=0)=>{let b=2*Math.PI,H=v*=500*b/zzfxR**2,I=(0<x?1:-1)*b/4,D=c*=(1+2*k*Math.random()-k)*b/zzfxR,Z=[],g=0,E=0,a=0,n=1,J=0,K=0,f=0,p,h;e=99+zzfxR*e;m*=zzfxR;t*=zzfxR;u*=zzfxR;d*=zzfxR;z*=500*b/zzfxR**3;x*=b/zzfxR;w*=b/zzfxR;A*=zzfxR;l=zzfxR*l|0;for(h=e+m+t+u+d|0;a<h;Z[a++]=f)++K%(100*G|0)||(f=r?1<r?2<r?3<r?Math.sin((g%b)**3):Math.max(Math.min(Math.tan(g),1),-1):1-(2*g/b%2+2)%2:1-4*Math.abs(Math.round(g/b)-g/b):Math.sin(g),f=(l?1-C+C*Math.sin(2*Math.PI*a/l):1)*(0<f?1:-1)*Math.abs(f)**F*q*zzfxV*(a<e?a/e:a<e+m?1-(a-e)/m*(1-y):a<e+m+t?y:a<h-d?(h-a-d)/u*y:0),f=d?f/2+(d>a?0:(a<h-d?1:(h-a)/d)*Z[a-d|0]/2):f),p=(c+=v+=z)*Math.sin(E*x-I),g+=p-p*B*(1-1E9*(Math.sin(a)+1)%2),E+=p-p*B*(1-1E9*(Math.sin(a)**2+1)%2),n&&++n>A&&(c+=w,D+=w,n=0),!l||++J%l||(c=D,v=H,n=n||1);return Z};
-            let zzfxV=.3; // Volume
-            let zzfxR=44100; // Sample rate
-            let zzfxX=new(window.AudioContext||webkitAudioContext)
-
-            const canvas = document.getElementById('cnvs');
-            const ctx = canvas.getContext('2d');
-            const t_D = document.getElementById('timer');
-            const c_D = document.getElementById('tries');
-            const cnt_D = document.getElementById('counter');
-            const f5_i = document.getElementById('refresh');
-            const d_i = document.getElementById('download');
-            const ss_i = document.getElementById('sS');
-
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-
-            const cX = canvas.width / 2;
-            const cY = canvas.height / 2;
-            const rDs = Math.min(canvas.width, canvas.height) / 2 - 40;
-            const rC = 15;
-
-            let rec = [];
-            let lCr = null;
-            let tI = null;
-            let s_Tm = null;
-            let cCt = 0;
-
-            function fE(element) {
-            element.classList.add('flash');
-            setTimeout(() => {
-                element.classList.remove('flash');
-            }, 200);
-            }
-
-            function bR(rect) {
-                const pCs = [];
-                const pCt = Math.floor((rect.width * rect.height) / 100);
-
-                        // Detect device type
-                const iAnd = /Android/i.test(navigator.userAgent);
-                const iIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-                // Adjust speeds for devices
-                let dXr, dYr;
-                if (iAnd) {
-                    dXr = [-3, 3];
-                    dYr = [-3, 3];
-                    wid = [5, 20];
-                    hei = [5, 10];
-                } else if (iIOS) {
-                    dXr = [-4, 4];
-                    dYr = [-4, 4];
-                    wid = [5, 30];
-                    hei = [5, 10];
-                } else {
-                    dXr = [-3, 3];
-                    dYr = [-3, 3];
-                    wid = [20, 70];
-                    hei = [5, 10];
-                }
-
-                for (let i = 0; i < pCt; i++) {
-                    const pCe = {
-                        x: rect.x + rF(0, rect.width),
-                        y: rect.y + rF(0, rect.height),
-                        dx: rF(...dXr), // Random x movement in all directions
-                        dy: rF(...dYr), // Random y movement in all directions
-                        width: rF(...wid),
-                        height: rF(...hei),
-                        color: rPc(),
-                        opacity: 1.0, // Initial opacity (fully visible)
-                    };
-                    pCs.push(pCe);
-                }
-
-                return pCs;
-            }
-
-
-            function aP(pCs, callback) {
-                function step() {
-                    //ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    rDc();
-
-                    pCs.forEach((pCe) => {
-                      const iAnd = /Android/i.test(navigator.userAgent);
-                      const iIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-                      if (iAnd) {
-                          var po = 0.075;
-                      } else if (iIOS) {
-                          var po = 0.2;
-                      } else {
-                          var po = 0.11;
-                      }
-
-                        pCe.x += pCe.dx;
-                        pCe.y += pCe.dy;
-                        pCe.opacity -= po; // Gradually reduce opacity
-
-                        if (pCe.opacity > 0) {
-                            ctx.globalAlpha = pCe.opacity; // Apply opacity
-                            ctx.fillStyle = pCe.color;
-                            ctx.fillRect(pCe.x, pCe.y, pCe.width, pCe.height);
-                            ctx.globalAlpha = 1.0; // Reset opacity
-                        }
-                    });
-
-                    // Continue animation while pCs are visible
-                    if (pCs.some(pCe => pCe.opacity > 0)) {
-                        requestAnimationFrame(step);
-                    } else if (callback) {
-                        callback(); // Trigger callback after animation finishes
-                    }
-                }
-
-                step();
-            }
-
-
-
-            function cR() {
-                const aL = Math.random() * 2 * Math.PI;
-                const dT = Math.random() * (rDs * 0.85);
-                const width = Math.random() * (canvas.width * 0.4) + (canvas.width * 0.05);
-                const height = Math.random() * (canvas.height * 0.4) + (canvas.height * 0.05);
-
-
-                const x = Math.max(
-                    Math.min(cX + Math.cos(aL) * dT - width / 2, canvas.width - width),
-                    0
-                );
-                const y = Math.max(
-                    Math.min(cY + Math.sin(aL) * dT - height / 2, canvas.height - height),
-                    0
-                );
-
-                const grd = cGrd();
-                return { x, y, width, height, grd, path: new Path2D() };
-            }
-
-
-            function dR(rect) {
-                rect.path.rect(rect.x, rect.y, rect.width, rect.height);
-                ctx.fillStyle = rect.grd;
-                ctx.globalAlpha = 0.7;
-                ctx.fill(rect.path);
-            }
-
-            function iR() {
-                rec = [];
-                for (let i = 0; i < rC; i++) {
-                    rec.push(cR());
-                }
-                cnt_D.textContent = `Layrz: ${rec.length}`;
-            }
-
-            function rDc() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = 'black';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(cX, cY, rDs, 0, 2 * Math.PI);
-                ctx.clip();
-
-                rec.forEach((rect, index) => {
-                    dR(rect);
-                    if (index === rec.length - 1) {
-                        lCr = rect.path;
-                    }
-                });
-
-                ctx.restore();
-            }
-
-            function dWm() {
-
-                // Set dimensions for the winner message
-                const rW = 300;
-                const rH = 100;
-                const r_X = cX - rW / 2;
-                const r_Y = cY - rH / 2;
-
-                // Clear the canvas
-                ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear everything
-                ctx.save(); // Save the current canvas state
-
-                // Draw the background rectangle
-                ctx.fillStyle = rPc();
-                ctx.fillRect(r_X, r_Y, rW, rH);
-
-                // Draw the winner text
-                ctx.font = 'bold 24px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillStyle = 'black';
-                ctx.fillText('WINNER!', r_X + rW / 2 + 2, r_Y + rH / 2 + 2);
-                ctx.fillStyle = 'white';
-                ctx.fillText('WINNER!', r_X + rW / 2, r_Y + rH / 2);
-
-                ctx.restore(); // Restore the canvas state
-            }
-
-
-
-            function sTr() {
-                if (tI) return;
-                s_Tm = Date.now();
-                tI = setInterval(() => {
-                    const eT = Math.floor((Date.now() - s_Tm) / 1000);
-                    const mNs = String(Math.floor(eT / 60)).padStart(2, '0');
-                    const sCs = String(eT % 60).padStart(2, '0');
-                    t_D.textContent = `${mNs}:${sCs}`;
-                }, 1000);
-            }
-
-            function stTr() {
-                clearInterval(tI);
-                tI = null;
-            }
-
-            const c_S = [.1,,128,.08,.22,.2,,.71,,-1.5,-924,.05,.12,.09,.33,.12,.09];
-            const inc_S = [.9,,75,.01,.01,.2,,.71,,-1.5,-924,1.05,.12,.09,.33,.12,.09];
-
-            let iGa = true;
-
-            //const winnerMessageDelay = 200; // Control delay for winner message (1 second)
-
-            canvas.addEventListener('click', (e) => {
-                const rect = canvas.getBoundingClientRect();
-                const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-                const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-
-                // Prevent further clicks after the game ends
-                if (!iGa) return;
-
-                if (!s_Tm) sTr();
-
-                if (rec.length > 0) {
-                    cCt++;
-                    c_D.textContent = `Tries: ${cCt}`;
-                }
-
-                if (lCr && ctx.isPointInPath(lCr, x, y)) {
-                    zzfx(...c_S);
-
-                    // Remove the clicked rectangle
-                    const rect = rec.pop();
-                    cnt_D.textContent = `Layrz: ${rec.length}`;
-
-                    if (rec.length === 0) {
-                        // Game is over, skip animation and display winner message
-                        stTr();
-                        iGa = false;
-
-                        //ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear everything
-                        // Play the winner tune
-                        for (let i = 0; i < 5; i++) {
-                            setTimeout(() => zzfx(...c_S), i * 100); // 300ms delay between each execution
-                        }
-
-                        dWm(); // Show the winner message
-                    } else {
-                        // Animate the breaking of the clicked rectangle
-                        const pCs = bR(rect);
-                        aP(pCs, () => {
-                            rDc(); // Redraw the remaining rec after animation
-                        });
-                    }
-                } else if (rec.length > 0) {
-                    zzfx(...inc_S);
-                }
-            });
-
-
-
-
-
-
-
-
-
-
-            document.getElementById('f5_i').addEventListener('click', () => {
-                fE(document.getElementById('f5_i'));
-                location.reload();
-            });
-
-            document.getElementById('d_i').addEventListener('click', () => {
-                // Trigger the flash effect
-                    setTimeout(() => {
-                fE(document.getElementById('d_i'));
-              }, 0); // Match the flash animation duration
-
-                // Create the offscreen canvas and context
-                const uSr = 4096; // 2K resolution
-                const oSc = document.createElement('canvas');
-                const oScX = oSc.getContext('2d');
-
-                // Set the offscreen canvas size
-                oSc.width = uSr;
-                oSc.height = uSr;
-
-                // Save the aspect ratio of the original canvas
-                const scale = uSr / Math.min(canvas.width, canvas.height);
-                const s_W = canvas.width * scale;
-                const s_H = canvas.height * scale;
-                const os_X = (uSr - s_W) / 2;
-                const os_Y = (uSr - s_H) / 2;
-
-                // Draw the image on the offscreen canvas
-                oScX.drawImage(canvas, os_X, os_Y, s_W, s_H);
-
-                // Capture the image data URL before delaying
-                const img = oSc.toDataURL('image/png');
-
-                // Delay the download to allow the flash animation to complete
-                setTimeout(() => {
-                    const link = document.createElement('a');
-                    link.download = 'art-4k.png';
-                    link.href = img; // Use the pre-captured image URL
-                    link.click();
-                }, 100); // Match the flash animation duration
-            });
-
-
-
-            ss_i.addEventListener('click', () => {
-                fE(document.getElementById('sS'));
-                const oSc = document.createElement('canvas');
-                const oScX = oSc.getContext('2d');
-
-                oSc.width = 300;
-                oSc.height = 250;
-
-                const now = new Date();
-                const dt = now.toLocaleDateString();
-                const tm = now.toLocaleTimeString();
-
-                oScX.fillStyle = 'black';
-                oScX.fillRect(0, 0, oSc.width, oSc.height);
-
-                oScX.fillStyle = 'white';
-                oScX.font = '16px Arial';
-                oScX.fillText(`Date: ${dt}`, 10, 40);
-                oScX.fillText(`Time: ${tm}`, 10, 70);
-                oScX.fillText(`Start Layrz: ${rC}`, 10, 110);
-                oScX.fillText(t_D.textContent, 10, 150);
-                oScX.fillText(c_D.textContent, 10, 190);
-                oScX.fillText(cnt_D.textContent, 10, 230);
-
-                const link = document.createElement('a');
-                link.download = 'stats.png';
-                link.href = oSc.toDataURL('image/png');
-                link.click();
-            });
-
-            iR();
-            rDc();
-
-
-                    window.addEventListener('pagehide', (event) => {
-                    var css = document.getElementsByTagName("canvas");
-                    var cL = Array.prototype.slice.call(css);
-                    cL.forEach(rLc);
-                    });
-        </script>
+        const BLOCKFROST_API_KEY = 'mainnetFacOFHKb6AQFIygQqyOz9PIhkjzTPHTR';  // Replace with your API key
+
+const BLOCKFROST_URL = 'https://cardano-mainnet.blockfrost.io/api/v0';
+const cache = new Map();
+
+
+
+async function handleSearch() {
+    const input = document.getElementById('searchInput').value.trim();
+    const viewLimit = document.getElementById('viewDropdown').value;
+    const assetGrid = document.getElementById('assetGrid');
+    const loader = document.getElementById('loader');
+
+    assetGrid.innerHTML = '';
+    loader.style.display = 'block';
+
+    if (!/^addr1|stake1|[a-f0-9]{56,64}$/i.test(input)) {
+        alert('Invalid input.');
+        loader.style.display = 'none';
+        return;
+    }
+
+    if (cache.has(input)) {
+        renderAssets(cache.get(input), viewLimit);
+        loader.style.display = 'none';
+        return;
+    }
+
+    const assets = await fetchAssets(input);
+    if (assets.length) {
+        cache.set(input, assets);
+        renderAssets(assets, viewLimit);
+    } else {
+        assetGrid.innerHTML = '<p>No assets found.</p>';
+    }
+    loader.style.display = 'none';
+}
+
+async function fetchAssets(input) {
+    try {
+        let endpoint = /^[a-f0-9]{56,64}$/i.test(input) ? `/assets/policy/${input}` : `/addresses/${input}/utxos`;
+        const res = await fetch(`${BLOCKFROST_URL}${endpoint}`, {
+            headers: { project_id: BLOCKFROST_API_KEY }
+        });
+
+        if (!res.ok) throw new Error(`API Error: ${res.status}`);
+        const data = await res.json();
+        console.log('Fetched Data:', JSON.stringify(data, null, 2));
+        return data;
+
+    } catch (error) {
+        alert(`Error fetching data: ${error.message}`);
+        return [];
+    }
+}
+
+function renderAssets(assets, limit) {
+    const assetGrid = document.getElementById('assetGrid');
+    assetGrid.innerHTML = '';
+
+    const limitedAssets = limit === 'all' ? assets : assets.slice(0, limit);
+
+    limitedAssets.forEach(asset => {
+        const img = parseImageUrl(asset);
+        const card = document.createElement('div');
+        card.className = 'asset-card';
+        card.innerHTML = `
+            <img src="${img}" alt="Asset Image" class="asset-image">
+            <p>${asset.onchain_metadata?.name || 'Unnamed Asset'}</p>
+        `;
+        card.onclick = () => openModal(asset);
+        assetGrid.appendChild(card);
+    });
+}
+
+function parseImageUrl(asset) {
+    let image = asset.onchain_metadata?.image;
+    if (!image && asset.onchain_metadata?.files) {
+        image = asset.onchain_metadata.files[0]?.src;
+    }
+
+    if (!image) return 'https://via.placeholder.com/150?text=No+Image';
+    if (image.startsWith('ipfs://')) return `https://ipfs.io/ipfs/${image.slice(7)}`;
+    if (image.startsWith('ar://')) return `https://arweave.net/${image.slice(5)}`;
+    if (image.startsWith('data:image')) return image;
+    if (image.startsWith('http')) return image;
+    return 'https://via.placeholder.com/150?text=Invalid+Image';
+}
+
+function openModal(asset) {
+    document.getElementById('metadataModal').style.display = 'flex';
+    const img = parseImageUrl(asset);
+    document.getElementById('metadataDetails').innerHTML = `
+        <h2>${asset.onchain_metadata?.name || 'Unnamed Asset'}</h2>
+        <img src="${img}" alt="Asset Image" style="max-width: 100%; height: auto;">
+        <pre>${JSON.stringify(asset.onchain_metadata, null, 2)}</pre>
+    `;
+}
+
+function closeModal() {
+    document.getElementById('metadataModal').style.display = 'none';
+}
+
+function viewFullScreen() {
+    const img = document.querySelector('#metadataDetails img');
+    if (img && img.requestFullscreen) {
+        img.requestFullscreen();
+    } else {
+        alert('Image not available for full-screen view.');
+    }
+}
+
+
+    </script>
 </body>
 </html>
